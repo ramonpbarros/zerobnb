@@ -1,8 +1,8 @@
-# `Clonebnb`
+# `Zerobnb`
 
 ## Database Schema Design
 
-`<insert database schema design here>`
+![db-schema](./images/zerobnbDiagram.png)
 
 ## API Documentation
 
