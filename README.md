@@ -1,6 +1,7 @@
 # Zerobnb
-> Outline a brief description of your project.
-> Live demo [_here_](https://www.example.com). <!-- If you have the project hosted somewhere, include the link here. -->
+> This Airbnb clone aims to closely emulate the core functionalities of the original platform, allowing users to explore a diverse range of properties, make reservations, and host their own spaces. I'm dedicated to implementing robust back-end systems, a user-friendly front-end interface, and feature-rich experience for both guests and hosts. Through this project, I aim to showcase my proficiency in web development, database management, and user authentication, demonstrating our ability to create a polished and fully functional application within the confines of my coding bootcamp.
+
+> Live demo [_here_](https://ramon-zerobnb.onrender.com).
 
 ## Table of Contents
 * [General Info](#general-information)
