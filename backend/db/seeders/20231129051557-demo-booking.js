@@ -9,26 +9,31 @@ if (process.env.NODE_ENV === 'production') {
 
 module.exports = {
   async up(queryInterface, Sequelize) {
-    await Booking.bulkCreate([
-      {
-        spotId: 1,
-        userId: 1,
-        startDate: '2023-11-25',
-        endDate: '2023-11-29',
-      },
-      {
-        spotId: 2,
-        userId: 2,
-        startDate: '2023-11-25',
-        endDate: '2023-11-29',
-      },
-      {
-        spotId: 3,
-        userId: 3,
-        startDate: '2023-11-25',
-        endDate: '2023-11-29',
-      },
-    ]);
+    try {
+      await Booking.bulkCreate([
+        {
+          spotId: 1,
+          userId: 1,
+          startDate: '2023-11-25',
+          endDate: '2023-11-29',
+        },
+        {
+          spotId: 2,
+          userId: 2,
+          startDate: '2023-11-25',
+          endDate: '2023-11-29',
+        },
+        {
+          spotId: 3,
+          userId: 3,
+          startDate: '2023-11-25',
+          endDate: '2023-11-29',
+        },
+      ]);
+    } catch (error) {
+      console.error('Error during Booking bulkCreate:', error);
+      throw error;
+    }
   },
 
   async down(queryInterface, Sequelize) {
