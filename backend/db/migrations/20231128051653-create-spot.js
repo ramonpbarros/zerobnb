@@ -46,7 +46,7 @@ module.exports = {
           type: Sequelize.STRING(30),
         },
         description: {
-          type: Sequelize.STRING(256),
+          type: Sequelize.STRING(255),
           allowNull: false,
         },
         price: {
