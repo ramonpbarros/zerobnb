@@ -21,7 +21,7 @@ module.exports = {
             lng: -77.0364,
             name: 'Name',
             description:
-              'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer euismod libero sed ante scelerisque pharetra. Morbi sagittis risus id massa porttitor luctus. Curabitur sapien arcu, vehicula non vulputate quis, dapibus eu lorem. Praesent placerat aliquet neque, at feugiat metus facilisis ut.',
+              'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer euismod libero sed ante scelerisque pharetra. Morbi sagittis risus id massa porttitor luctus',
             price: 100,
           },
           {
@@ -33,7 +33,7 @@ module.exports = {
             lng: -77.0364,
             name: 'Name',
             description:
-              'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer euismod libero sed ante scelerisque pharetra. Morbi sagittis risus id massa porttitor luctus. Curabitur sapien arcu, vehicula non vulputate quis, dapibus eu lorem. Praesent placerat aliquet neque, at feugiat metus facilisis ut.',
+              'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer euismod libero sed ante scelerisque pharetra. Morbi sagittis risus id massa porttitor luctus',
             price: 100,
           },
           {
