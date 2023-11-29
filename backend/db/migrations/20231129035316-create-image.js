@@ -19,11 +19,11 @@ module.exports = {
         allowNull: false,
       },
       imageableType: {
-        type: Sequelize.STRING,
+        type: Sequelize.STRING(30),
         allowNull: false,
       },
       url: {
-        type: Sequelize.STRING,
+        type: Sequelize.TEXT,
         allowNull: false,
       },
       preview: {
@@ -33,10 +33,12 @@ module.exports = {
       createdAt: {
         allowNull: false,
         type: Sequelize.DATE,
+        defaultValue: Sequelize.literal('CURRENT_TIMESTAMP'),
       },
       updatedAt: {
         allowNull: false,
         type: Sequelize.DATE,
+        defaultValue: Sequelize.literal('CURRENT_TIMESTAMP'),
       },
     });
   },

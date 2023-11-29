@@ -23,9 +23,12 @@ module.exports = (sequelize, DataTypes) => {
       imageableType: {
         type: DataTypes.STRING,
         allowNull: false,
+        validate: {
+          len: [1, 6],
+        },
       },
       url: {
-        type: DataTypes.STRING,
+        type: DataTypes.TEXT,
         allowNull: false,
       },
       preview: {
