@@ -7,6 +7,7 @@ module.exports = (sequelize, DataTypes) => {
     static associate(models) {
       Spot.belongsTo(models.User);
       Spot.hasMany(models.Booking);
+      Spot.hasMany(models.Review);
     }
   }
   Spot.init(
