@@ -13,8 +13,8 @@ module.exports = (sequelize, DataTypes) => {
         foreignKey: 'imageableId',
         constraints: false,
         scope: {
-          imageableType: 'Spot'
-        }
+          imageableType: 'Spot',
+        },
       });
     }
   }
@@ -48,12 +48,10 @@ module.exports = (sequelize, DataTypes) => {
       lat: {
         type: DataTypes.DECIMAL,
         allowNull: false,
-        isNumeric: true,
       },
       lng: {
         type: DataTypes.DECIMAL,
         allowNull: false,
-        isNumeric: true,
       },
       name: {
         type: DataTypes.STRING,
