@@ -1,15 +1,20 @@
 'use strict';
-const { Model, Validator } = require('sequelize');
+
+const { Model } = require('sequelize');
 
 module.exports = (sequelize, DataTypes) => {
   class Spot extends Model {
     static associate(models) {
       Spot.belongsTo(models.User);
+      Spot.hasMany(models.Booking);
     }
   }
   Spot.init(
     {
-      ownerId: DataTypes.INTEGER,
+      ownerId: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+      },
       address: {
         type: DataTypes.STRING,
         allowNull: false,
@@ -35,23 +40,11 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.DECIMAL,
         allowNull: false,
         isNumeric: true,
-        // isDecimal: true,
-        isNotNumeric(value) {
-          if (!Validator.isNumeric(value)) {
-            throw new Error('Include numbers only.');
-          }
-        },
       },
       lng: {
         type: DataTypes.DECIMAL,
         allowNull: false,
         isNumeric: true,
-        // isDecimal: true,
-        isNotNumeric(value) {
-          if (!Validator.isNumeric(value)) {
-            throw new Error('Include numbers only.');
-          }
-        },
       },
       name: {
         type: DataTypes.STRING,
@@ -70,7 +63,6 @@ module.exports = (sequelize, DataTypes) => {
       price: {
         type: DataTypes.DECIMAL,
         allowNull: false,
-        // isDecimal: true,
       },
     },
     {
