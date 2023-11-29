@@ -7,6 +7,14 @@ module.exports = (sequelize, DataTypes) => {
     static associate(models) {
       Review.belongsTo(models.User);
       Review.belongsTo(models.Spot);
+
+      Review.hasMany(models.Image, {
+        foreignKey: 'imageableId',
+        constraints: false,
+        scope: {
+          imageableType: 'Review'
+        }
+      });
     }
   }
   Review.init(

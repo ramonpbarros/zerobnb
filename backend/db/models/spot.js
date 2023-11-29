@@ -8,6 +8,14 @@ module.exports = (sequelize, DataTypes) => {
       Spot.belongsTo(models.User);
       Spot.hasMany(models.Booking);
       Spot.hasMany(models.Review);
+
+      Spot.hasMany(models.Image, {
+        foreignKey: 'imageableId',
+        constraints: false,
+        scope: {
+          imageableType: 'Spot'
+        }
+      });
     }
   }
   Spot.init(
