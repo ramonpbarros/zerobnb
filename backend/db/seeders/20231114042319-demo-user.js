@@ -10,32 +10,37 @@ if (process.env.NODE_ENV === 'production') {
 
 module.exports = {
   async up(queryInterface, Sequelize) {
-    await User.bulkCreate(
-      [
-        {
-          email: 'demo@user.io',
-          firstName: 'demonName1',
-          lastName: 'demonLast1',
-          username: 'Demo-lition',
-          hashedPassword: bcrypt.hashSync('password'),
-        },
-        {
-          email: 'user1@user.io',
-          firstName: 'demonName2',
-          lastName: 'demonLast2',
-          username: 'FakeUser1',
-          hashedPassword: bcrypt.hashSync('password2'),
-        },
-        {
-          email: 'user2@user.io',
-          firstName: 'demonName3',
-          lastName: 'demonLast3',
-          username: 'FakeUser2',
-          hashedPassword: bcrypt.hashSync('password3'),
-        },
-      ],
-      { validate: true }
-    );
+    try {
+      await User.bulkCreate(
+        [
+          {
+            email: 'demo@user.io',
+            firstName: 'demonName1',
+            lastName: 'demonLast1',
+            username: 'Demo-lition',
+            hashedPassword: bcrypt.hashSync('password'),
+          },
+          {
+            email: 'user1@user.io',
+            firstName: 'demonName2',
+            lastName: 'demonLast2',
+            username: 'FakeUser1',
+            hashedPassword: bcrypt.hashSync('password2'),
+          },
+          {
+            email: 'user2@user.io',
+            firstName: 'demonName3',
+            lastName: 'demonLast3',
+            username: 'FakeUser2',
+            hashedPassword: bcrypt.hashSync('password3'),
+          },
+        ],
+        { validate: true }
+      );
+    } catch (error) {
+      console.error('Error during bulkCreate:', error);
+      throw error;
+    }
   },
 
   async down(queryInterface, Sequelize) {
