@@ -6,13 +6,13 @@ module.exports = (sequelize, DataTypes) => {
   class Spot extends Model {
     static associate(models) {
       Spot.belongsToMany(models.User, {
-        through: models.Booking,
+        through: 'Bookings',
         foreignKey: 'spotId',
         otherKey: 'userId',
       });
 
       Spot.belongsTo(models.User, {
-        foreignKey: 'userId',
+        foreignKey: 'ownerId',
       });
       Spot.hasMany(models.Review, {
         foreignKey: 'spotId',
@@ -28,7 +28,7 @@ module.exports = (sequelize, DataTypes) => {
   }
   Spot.init(
     {
-      userId: {
+      ownerId: {
         type: DataTypes.INTEGER,
         allowNull: false,
       },
