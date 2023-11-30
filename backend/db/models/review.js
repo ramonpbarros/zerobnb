@@ -5,15 +5,19 @@ const { Model } = require('sequelize');
 module.exports = (sequelize, DataTypes) => {
   class Review extends Model {
     static associate(models) {
-      Review.belongsTo(models.User);
-      Review.belongsTo(models.Spot);
+      Review.belongsTo(models.User, {
+        foreignKey: 'userId',
+      });
+      Review.belongsTo(models.Spot, {
+        foreignKey: 'spotId',
+      });
 
       Review.hasMany(models.Image, {
         foreignKey: 'imageableId',
         constraints: false,
         scope: {
-          imageableType: 'Review'
-        }
+          imageableType: 'Review',
+        },
       });
     }
   }
