@@ -5,13 +5,13 @@ module.exports = (sequelize, DataTypes) => {
   class User extends Model {
     static associate(models) {
       User.belongsToMany(models.Spot, {
-        through: models.Booking,
+        through: 'Bookings',
         foreignKey: 'userId',
         otherKey: 'spotId',
       });
 
       User.hasMany(models.Spot, {
-        foreignKey: 'userId'
+        foreignKey: 'ownerId'
       })
       User.hasMany(models.Review, {
         foreignKey: 'userId',
