@@ -10,6 +10,9 @@ module.exports = (sequelize, DataTypes) => {
         otherKey: 'userId',
       });
 
+      User.hasMany(models.Spot, {
+        foreignKey: 'userId'
+      })
       User.hasMany(models.Review, {
         foreignKey: 'userId',
       });
