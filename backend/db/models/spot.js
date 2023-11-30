@@ -53,6 +53,13 @@ module.exports = (sequelize, DataTypes) => {
           len: [1, 30],
         },
       },
+      country: {
+        type: DataTypes.STRING,
+        allowNull: false,
+        validate: {
+          len: [1, 30],
+        },
+      },
       lat: {
         type: DataTypes.DECIMAL,
         allowNull: false,
