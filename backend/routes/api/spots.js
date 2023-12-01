@@ -16,16 +16,6 @@ router.get('/', async (req, res) => {
   });
 
   allSpots.forEach((spot) => {
-    spot.Images.forEach((image) => {
-      if (image.url) {
-        spot.previewImage = image.url;
-      }
-    });
-
-    if (!spot.previewImage) {
-      spot.previewImage = 'No preview image found';
-    }
-
     const reviews = spot.Reviews || [];
     const totalStars = reviews.reduce((sum, review) => sum + review.stars, 0);
     const avgRating = reviews.length > 0 ? totalStars / reviews.length : 0;
@@ -35,6 +25,16 @@ router.get('/', async (req, res) => {
         spot.avgRating = avgRating;
       }
     });
+
+    spot.Images.forEach((image) => {
+      if (image.url) {
+        spot.previewImage = image.url;
+      }
+    });
+
+    if (!spot.previewImage) {
+      spot.previewImage = 'No preview image found';
+    }
 
     delete spot.Images;
     delete spot.Reviews;
