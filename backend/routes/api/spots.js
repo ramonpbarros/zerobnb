@@ -1,5 +1,5 @@
 const express = require('express');
-const { Spot, Image, Review, Sequelize } = require('../../db/models');
+const { Spot, Image, Review } = require('../../db/models');
 
 const router = express.Router();
 
