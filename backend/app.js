@@ -66,16 +66,41 @@ app.use((err, _req, _res, next) => {
   }
   next(err);
 });
+// Process sequelize errors
+// app.use((err, req, res, next) => {
+// 	// check if error is a Sequelize error:
+// 	if (err instanceof ValidationError) {
+// 		let errors = {};
+// 		for (let error of err.errors) {
+// 			switch(error.path){
+// 				case 'credential':
+// 					error.message = 'User with that email already exists'
+// 					err.message = 'User already exists'
+// 					break;
+
+// 				case 'password':
+// 					error.message = 'User with that username already exists'
+// 					err.message = 'User already exists'
+// 					break;
+// 			}
+// 			errors[error.path] = error.message;
+
+// 		}
+// 		err.title = "Validation error";
+// 		err.errors = errors;
+// 	}
+// 	next(err);
+// });
 
 // Error formatter
 app.use((err, _req, res, _next) => {
   res.status(err.status || 500);
   console.error(err);
   res.json({
-    title: err.title || 'Server Error',
+    // title: err.title || 'Server Error',
     message: err.message,
     errors: err.errors,
-    stack: isProduction ? null : err.stack
+    // stack: isProduction ? null : err.stack
   });
 });
 
