@@ -180,12 +180,19 @@ router.post('/:spotId/images', requireAuth, async (req, res) => {
 // Edit a Spot
 router.put('/:spotId', requireAuth, validateCreateSpot, async (req, res) => {
   const spotId = req.params.spotId;
+  const currentUser = req.user.toJSON();
 
   const spot = await Spot.findByPk(spotId);
 
   if (!spot) {
     return res.status(404).json({
       message: "Spot couldn't be found",
+    });
+  }
+
+  if (currentUser.id !== spot.id) {
+    return res.status(403).json({
+      message: 'Forbidden',
     });
   }
 
