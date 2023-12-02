@@ -1,8 +1,23 @@
 const express = require('express');
 const { Spot, Image, Review, User } = require('../../db/models');
 const { requireAuth } = require('../../utils/auth');
+const { handleValidationErrors } = require('../../utils/validation');
+const { check } = require('express-validator');
 
 const router = express.Router();
+
+const validateCreateSpot = [
+  check('address').exists().withMessage('Street address is required'),
+  check('city').exists().withMessage('City is required'),
+  check('state').exists().withMessage('State is required'),
+  check('country').exists().withMessage('Country is required'),
+  check('lat').exists().withMessage('Latitude must be within -90 and 90'),
+  check('lng').exists().withMessage('Longitude must be within -180 and 180'),
+  check('name').exists().withMessage('Name must be less than 50 characters'),
+  check('description').exists().withMessage('Description is required'),
+  check('price').exists().withMessage('Price per day must be a positive number'),
+  handleValidationErrors,
+];
 
 // Get all Spots
 router.get('/', async (req, res) => {
@@ -45,7 +60,6 @@ router.get('/', async (req, res) => {
 });
 
 // Get all spots owned by the current user
-
 router.get('/current', requireAuth, async (req, res) => {
   const currentUser = req.user.toJSON();
 
@@ -106,11 +120,26 @@ router.get('/:spotId', async (req, res) => {
 });
 
 // Create a Spot
-router.post('/', requireAuth, async (req, res) => {
+router.post('/', requireAuth, validateCreateSpot, async (req, res) => {
   const { address, city, state, country, lat, lng, name, description, price } =
     req.body;
-  console.log(req.body);
+
   const currentUser = req.user.toJSON();
+
+  // const errors = {};
+
+  // if (!address) {
+  //   errors.address = 'Street address is required';
+  // }
+
+  // Validate other fields similarly and populate the errors object
+
+  // if (Object.keys(errors).length > 0) {
+  //   return res.status(400).json({
+  //     message: 'Bad Request',
+  //     errors,
+  //   });
+  // }
 
   const newSpot = await Spot.create({
     ownerId: currentUser.id,
@@ -172,19 +201,19 @@ router.put('/:spotId', requireAuth, async (req, res) => {
 
 // Delete a Spot
 router.delete('/:spotId', async (req, res) => {
-  const spot = await Spot.findByPk(req.params.spotId)
+  const spot = await Spot.findByPk(req.params.spotId);
 
-  if(!spot) {
+  if (!spot) {
     return res.status(404).json({
       message: "Spot couldn't be found",
     });
   }
 
-  await spot.destroy()
+  await spot.destroy();
 
   res.json({
-      message: "Successfully deleted"
-  })
-})
+    message: 'Successfully deleted',
+  });
+});
 
 module.exports = router;
