@@ -128,4 +128,63 @@ router.post('/', requireAuth, async (req, res) => {
   res.status(201).json(newSpot);
 });
 
+// Add an Image to a Spot based on the Spot's id
+router.post('/:spotId/images', requireAuth, async (req, res) => {
+  const { url, preview } = req.body;
+
+  const spot = await Spot.findByPk(req.params.spotId);
+  if (!spot) {
+    return res.status(404).json({
+      message: "Spot couldn't be found",
+    });
+  }
+
+  const newImage = await Image.create({
+    imageableId: spot.id,
+    imageableType: 'Spot',
+    url,
+    preview,
+  });
+
+  res.json({
+    id: newImage.id,
+    url: newImage.url,
+    preview: newImage.preview,
+  });
+});
+
+// Edit a Spot
+router.put('/:spotId', requireAuth, async (req, res) => {
+  const spotId = req.params.spotId;
+
+  const spot = await Spot.findByPk(spotId);
+
+  if (!spot) {
+    return res.status(404).json({
+      message: "Spot couldn't be found",
+    });
+  }
+
+  await spot.update(req.body);
+
+  res.json(spot);
+});
+
+// Delete a Spot
+router.delete('/:spotId', async (req, res) => {
+  const spot = await Spot.findByPk(req.params.spotId)
+
+  if(!spot) {
+    return res.status(404).json({
+      message: "Spot couldn't be found",
+    });
+  }
+
+  await spot.destroy()
+
+  res.json({
+      message: "Successfully deleted"
+  })
+})
+
 module.exports = router;
