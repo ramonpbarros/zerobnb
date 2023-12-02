@@ -1,22 +1,36 @@
 const express = require('express');
 const { Spot, Image, Review, User } = require('../../db/models');
-const { requireAuth } = require('../../utils/auth');
+const { requireAuth, isAuthorized } = require('../../utils/auth');
 const { handleValidationErrors } = require('../../utils/validation');
 const { check } = require('express-validator');
 
 const router = express.Router();
 
-const validateCreateSpot = [
+const validateSpot = [
   check('address').exists().withMessage('Street address is required'),
   check('city').exists().withMessage('City is required'),
   check('state').exists().withMessage('State is required'),
   check('country').exists().withMessage('Country is required'),
-  check('lat').exists().withMessage('Latitude must be within -90 and 90'),
-  check('lng').exists().withMessage('Longitude must be within -180 and 180'),
-  check('name').exists().withMessage('Name must be less than 50 characters'),
+  check('lat')
+    .exists()
+    .withMessage('Latitude is required')
+    .isFloat({ min: -90, max: 90 })
+    .withMessage('Latitude must be within -90 and 90'),
+  check('lng')
+    .exists()
+    .withMessage('Longitude is required')
+    .isFloat({ min: -180, max: 180 })
+    .withMessage('Longitude must be within -180 and 180'),
+  check('name')
+    .exists()
+    .withMessage('Name is required')
+    .isLength({ max: 50 })
+    .withMessage('Name must be less than 50 characters'),
   check('description').exists().withMessage('Description is required'),
   check('price')
     .exists()
+    .withMessage('Price per day is required')
+    .isFloat({ gt: 0 })
     .withMessage('Price per day must be a positive number'),
   handleValidationErrors,
 ];
@@ -122,7 +136,7 @@ router.get('/:spotId', async (req, res) => {
 });
 
 // Create a Spot
-router.post('/', requireAuth, validateCreateSpot, async (req, res) => {
+router.post('/', requireAuth, validateSpot, async (req, res) => {
   const { address, city, state, country, lat, lng, name, description, price } =
     req.body;
 
@@ -145,76 +159,72 @@ router.post('/', requireAuth, validateCreateSpot, async (req, res) => {
 });
 
 // Add an Image to a Spot based on the Spot's id
-router.post('/:spotId/images', requireAuth, async (req, res) => {
-  const { url, preview } = req.body;
-  const currentUser = req.user.toJSON();
+router.post(
+  '/:spotId/images',
+  requireAuth,
+  isAuthorized,
+  async (req, res) => {
+    const { url, preview } = req.body;
 
-  const spot = await Spot.findByPk(req.params.spotId);
+    const spot = await Spot.findByPk(req.params.spotId);
 
-  if (!spot) {
-    return res.status(404).json({
-      message: "Spot couldn't be found",
+    if (!spot) {
+      return res.status(404).json({
+        message: "Spot couldn't be found",
+      });
+    }
+
+    const newImage = await Image.create({
+      imageableId: spot.id,
+      imageableType: 'Spot',
+      url,
+      preview,
+    });
+
+    res.json({
+      id: newImage.id,
+      url: newImage.url,
+      preview: newImage.preview,
     });
   }
-
-  if (currentUser.id !== spot.id) {
-    return res.status(403).json({
-      message: 'Forbidden',
-    });
-  }
-
-  const newImage = await Image.create({
-    imageableId: spot.id,
-    imageableType: 'Spot',
-    url,
-    preview,
-  });
-
-  res.json({
-    id: newImage.id,
-    url: newImage.url,
-    preview: newImage.preview,
-  });
-});
+);
 
 // Edit a Spot
-router.put('/:spotId', requireAuth, validateCreateSpot, async (req, res) => {
-  const spotId = req.params.spotId;
-  const currentUser = req.user.toJSON();
+router.put(
+  '/:spotId',
+  requireAuth,
+  isAuthorized,
+  validateSpot,
+  async (req, res) => {
+    const spotId = req.params.spotId;
 
-  const spot = await Spot.findByPk(spotId);
+    const spot = await Spot.findByPk(spotId);
 
-  if (!spot) {
-    return res.status(404).json({
-      message: "Spot couldn't be found",
-    });
+    if (!spot) {
+      return res.status(404).json({
+        message: "Spot couldn't be found",
+      });
+    }
+
+    // if (currentUser.id !== spot.id) {
+    //   return res.status(403).json({
+    //     message: 'Forbidden',
+    //   });
+    // }
+
+    await spot.update(req.body);
+
+    res.json(spot);
   }
-
-  if (currentUser.id !== spot.id) {
-    return res.status(403).json({
-      message: 'Forbidden',
-    });
-  }
-
-  await spot.update(req.body);
-
-  res.json(spot);
-});
+);
 
 // Delete a Spot
-router.delete('/:spotId', async (req, res) => {
+router.delete('/:spotId', isAuthorized, async (req, res) => {
   const spot = await Spot.findByPk(req.params.spotId);
-  const currentUser = req.user.toJSON();
 
   if (!spot) {
     return res.status(404).json({
       message: "Spot couldn't be found",
-    });
-  }
-
-  if (currentUser.id !== spot.id) {
-    return res.status(403).json({
-      message: 'Forbidden',
     });
   }
 
