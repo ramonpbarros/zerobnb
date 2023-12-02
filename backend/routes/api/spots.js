@@ -15,7 +15,9 @@ const validateCreateSpot = [
   check('lng').exists().withMessage('Longitude must be within -180 and 180'),
   check('name').exists().withMessage('Name must be less than 50 characters'),
   check('description').exists().withMessage('Description is required'),
-  check('price').exists().withMessage('Price per day must be a positive number'),
+  check('price')
+    .exists()
+    .withMessage('Price per day must be a positive number'),
   handleValidationErrors,
 ];
 
@@ -126,21 +128,6 @@ router.post('/', requireAuth, validateCreateSpot, async (req, res) => {
 
   const currentUser = req.user.toJSON();
 
-  // const errors = {};
-
-  // if (!address) {
-  //   errors.address = 'Street address is required';
-  // }
-
-  // Validate other fields similarly and populate the errors object
-
-  // if (Object.keys(errors).length > 0) {
-  //   return res.status(400).json({
-  //     message: 'Bad Request',
-  //     errors,
-  //   });
-  // }
-
   const newSpot = await Spot.create({
     ownerId: currentUser.id,
     address,
@@ -183,7 +170,7 @@ router.post('/:spotId/images', requireAuth, async (req, res) => {
 });
 
 // Edit a Spot
-router.put('/:spotId', requireAuth, async (req, res) => {
+router.put('/:spotId', requireAuth, validateCreateSpot, async (req, res) => {
   const spotId = req.params.spotId;
 
   const spot = await Spot.findByPk(spotId);
