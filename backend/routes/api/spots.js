@@ -153,4 +153,29 @@ router.post('/:spotId/images', requireAuth, async (req, res) => {
   });
 });
 
+// Edit a Spot
+router.put('/:spotId', requireAuth, async (req, res) => {
+  const spotId = req.params.spotId;
+
+  const spot = await Spot.findByPk(spotId);
+
+  if (!spot) {
+    return res.status(404).json({
+      message: "Spot couldn't be found",
+    });
+  }
+
+  await spot.update(req.body);
+
+  res.json(spot);
+});
+
+// router.delete('/:id', async (req, res) => {
+//   const fan = await Fan.findByPk(req.params.id)
+//   await fan.destroy()
+//   res.json({
+//       message: "Successfully deleted"
+//   })
+// })
+
 module.exports = router;
