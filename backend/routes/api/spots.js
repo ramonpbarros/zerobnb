@@ -147,11 +147,19 @@ router.post('/', requireAuth, validateCreateSpot, async (req, res) => {
 // Add an Image to a Spot based on the Spot's id
 router.post('/:spotId/images', requireAuth, async (req, res) => {
   const { url, preview } = req.body;
+  const currentUser = req.user.toJSON();
 
   const spot = await Spot.findByPk(req.params.spotId);
+
   if (!spot) {
     return res.status(404).json({
       message: "Spot couldn't be found",
+    });
+  }
+
+  if (currentUser.id !== spot.id) {
+    return res.status(403).json({
+      message: 'Forbidden',
     });
   }
 
@@ -172,12 +180,19 @@ router.post('/:spotId/images', requireAuth, async (req, res) => {
 // Edit a Spot
 router.put('/:spotId', requireAuth, validateCreateSpot, async (req, res) => {
   const spotId = req.params.spotId;
+  const currentUser = req.user.toJSON();
 
   const spot = await Spot.findByPk(spotId);
 
   if (!spot) {
     return res.status(404).json({
       message: "Spot couldn't be found",
+    });
+  }
+
+  if (currentUser.id !== spot.id) {
+    return res.status(403).json({
+      message: 'Forbidden',
     });
   }
 
@@ -189,10 +204,17 @@ router.put('/:spotId', requireAuth, validateCreateSpot, async (req, res) => {
 // Delete a Spot
 router.delete('/:spotId', async (req, res) => {
   const spot = await Spot.findByPk(req.params.spotId);
+  const currentUser = req.user.toJSON();
 
   if (!spot) {
     return res.status(404).json({
       message: "Spot couldn't be found",
+    });
+  }
+
+  if (currentUser.id !== spot.id) {
+    return res.status(403).json({
+      message: 'Forbidden',
     });
   }
 
