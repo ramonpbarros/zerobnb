@@ -159,35 +159,30 @@ router.post('/', requireAuth, validateSpot, async (req, res) => {
 });
 
 // Add an Image to a Spot based on the Spot's id
-router.post(
-  '/:spotId/images',
-  requireAuth,
-  isAuthorized,
-  async (req, res) => {
-    const { url, preview } = req.body;
+router.post('/:spotId/images', requireAuth, isAuthorized, async (req, res) => {
+  const { url, preview } = req.body;
 
-    const spot = await Spot.findByPk(req.params.spotId);
+  const spot = await Spot.findByPk(req.params.spotId);
 
-    if (!spot) {
-      return res.status(404).json({
-        message: "Spot couldn't be found",
-      });
-    }
-
-    const newImage = await Image.create({
-      imageableId: spot.id,
-      imageableType: 'Spot',
-      url,
-      preview,
-    });
-
-    res.json({
-      id: newImage.id,
-      url: newImage.url,
-      preview: newImage.preview,
+  if (!spot) {
+    return res.status(404).json({
+      message: "Spot couldn't be found",
     });
   }
-);
+
+  const newImage = await Image.create({
+    imageableId: spot.id,
+    imageableType: 'Spot',
+    url,
+    preview,
+  });
+
+  res.json({
+    id: newImage.id,
+    url: newImage.url,
+    preview: newImage.preview,
+  });
+});
 
 // Edit a Spot
 router.put(
@@ -233,6 +228,39 @@ router.delete('/:spotId', isAuthorized, async (req, res) => {
   res.json({
     message: 'Successfully deleted',
   });
+});
+
+// Get all Reviews by a Spot's id
+router.get('/:spotId/reviews', async (req, res) => {
+  const spot = await Spot.findByPk(req.params.spotId);
+
+  if (!spot) {
+    return res.status(404).json({
+      message: "Spot couldn't be found",
+    });
+  }
+
+  const reviews = await spot.getReviews({
+    include: [
+      { model: User, attributes: ['id', 'firstName', 'lastName'] },
+      { model: Image, attributes: ['id', 'url'] },
+    ],
+  });
+
+  const modifiedReviews = reviews.map((review) => {
+    const reviewJson = review.toJSON();
+    if (reviewJson.Images) {
+      const imagesWithIdAndUrl = reviewJson.Images.map((image) => ({
+        id: image.id,
+        url: image.url,
+      }));
+      reviewJson.ReviewImages = imagesWithIdAndUrl;
+      delete reviewJson.Images;
+    }
+    return reviewJson;
+  });
+
+  res.json({ Reviews: modifiedReviews });
 });
 
 module.exports = router;
