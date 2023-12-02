@@ -1,6 +1,6 @@
 const jwt = require('jsonwebtoken');
 const { jwtConfig } = require('../config');
-const { User } = require('../db/models');
+const { User, Spot } = require('../db/models');
 
 const { secret, expiresIn } = jwtConfig;
 
@@ -18,14 +18,14 @@ const setTokenCookie = (res, user) => {
     { expiresIn: parseInt(expiresIn) } // 604,800 seconds = 1 week
   );
 
-  const isProduction = process.env.NODE_ENV === "production";
+  const isProduction = process.env.NODE_ENV === 'production';
 
   // Set the token cookie
   res.cookie('token', token, {
     maxAge: expiresIn * 1000, // maxAge in milliseconds
     httpOnly: true,
     secure: isProduction,
-    sameSite: isProduction && "Lax"
+    sameSite: isProduction && 'Lax',
   });
 
   return token;
@@ -45,8 +45,8 @@ const restoreUser = (req, res, next) => {
       const { id } = jwtPayload.data;
       req.user = await User.findByPk(id, {
         attributes: {
-          include: ['email', 'createdAt', 'updatedAt']
-        }
+          include: ['email', 'createdAt', 'updatedAt'],
+        },
       });
     } catch (e) {
       res.clearCookie('token');
@@ -68,6 +68,36 @@ const requireAuth = function (req, _res, next) {
   err.errors = { message: 'Authentication required' };
   err.status = 401;
   return next(err);
-}
+};
 
-module.exports = { setTokenCookie, restoreUser, requireAuth };
+// Require proper authorization: Spot must belong to the current user
+const isAuthorized = async function (req, _res, next) {
+  const currentUser = req.user.toJSON();
+  const spotId = req.params.spotId;
+
+  const spot = await Spot.findOne({
+    where: [
+      {
+        ownerId: spotId,
+      },
+    ],
+  });
+
+  let currentSpot = spot.toJSON();
+
+  if (currentUser.id === spot.id) {
+    return next();
+  } else if (currentSpot.ownerId !== currentUser.id) {
+    const err = new Error();
+    err.message = 'Forbidden';
+    err.status = 403;
+    return next(err);
+  }
+};
+
+module.exports = {
+  setTokenCookie,
+  restoreUser,
+  requireAuth,
+  isAuthorized,
+};
