@@ -86,14 +86,7 @@ router.post(
 
     const review = await Review.findByPk(req.params.reviewId);
 
-    if (!review) {
-      return res.status(404).json({
-        message: "Review couldn't be found",
-      });
-    }
-
     const images = await review.getImages({});
-    console.log(images.length);
 
     if (images.length < 11) {
       const newImage = await Image.create({

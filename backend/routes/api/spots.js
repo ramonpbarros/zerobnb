@@ -286,8 +286,9 @@ router.post(
     }
 
     const reviews = await spot.getReviews({});
+    console.log(reviews)
 
-    if (reviews) {
+    if (reviews.length) {
       return res.status(500).json({
         message: 'User already has a review for this spot',
       });
