@@ -1,10 +1,24 @@
 const express = require('express');
 const { Review, Spot, User, Image } = require('../../db/models');
-const { requireAuth } = require('../../utils/auth');
+const { requireAuth, isAuthorized } = require('../../utils/auth');
 const { handleValidationErrors } = require('../../utils/validation');
 const { check } = require('express-validator');
 
 const router = express.Router();
+
+const validateReview = [
+  check('review')
+    .exists()
+    .withMessage('Review text is required')
+    .isLength({ min: 1, max: 256 })
+    .withMessage('Review text is required'),
+  check('stars')
+    .exists()
+    .withMessage('Stars must be an integer from 1 to 5')
+    .isInt({ min: 1, max: 5 })
+    .withMessage('Stars must be an integer from 1 to 5'),
+  handleValidationErrors,
+];
 
 // Get all Reviews of the Current User
 router.get('/current', requireAuth, async (req, res) => {
@@ -61,5 +75,63 @@ router.get('/current', requireAuth, async (req, res) => {
 
   res.json({ Reviews: allReviews });
 });
+
+// Add an Image to a Review based on the Review's id
+router.post(
+  '/:reviewId/images',
+  requireAuth,
+  isAuthorized,
+  async (req, res) => {
+    const { url } = req.body;
+
+    const review = await Review.findByPk(req.params.reviewId);
+
+    const images = await review.getImages({});
+
+    if (images.length < 11) {
+      const newImage = await Image.create({
+        imageableId: review.id,
+        imageableType: 'Review',
+        url,
+        preview: false,
+      });
+
+      res.json({
+        id: newImage.id,
+        url: newImage.url,
+      });
+    } else {
+      return res.status(403).json({
+        message: 'Maximum number of images for this resource was reached',
+      });
+    }
+  }
+);
+
+// Edit a Review
+router.put(
+  '/:reviewId',
+  requireAuth,
+  isAuthorized,
+  validateReview,
+  async (req, res) => {
+    const review = await Review.findByPk(req.params.reviewId);
+
+    await review.update(req.body);
+
+    res.json(review);
+  }
+);
+
+// Delete a Review
+router.delete('/:reviewId', requireAuth, isAuthorized, async (req, res) => {
+  const review = await Review.findByPk(req.params.reviewId);
+
+  await review.destroy();
+
+  res.json({
+    message: 'Successfully deleted',
+  });
+})
 
 module.exports = router;

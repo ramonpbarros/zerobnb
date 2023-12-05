@@ -1,6 +1,6 @@
 const jwt = require('jsonwebtoken');
 const { jwtConfig } = require('../config');
-const { User, Spot } = require('../db/models');
+const { User, Spot, Review } = require('../db/models');
 
 const { secret, expiresIn } = jwtConfig;
 
@@ -74,24 +74,66 @@ const requireAuth = function (req, _res, next) {
 const isAuthorized = async function (req, _res, next) {
   const currentUser = req.user.toJSON();
   const spotId = req.params.spotId;
+  const reviewId = req.params.reviewId;
 
-  const spot = await Spot.findOne({
-    where: [
-      {
-        ownerId: spotId,
-      },
-    ],
-  });
+  if (spotId) {
+    const spot = await Spot.findOne({
+      where: [
+        {
+          ownerId: spotId,
+        },
+      ],
+    });
 
-  let currentSpot = spot.toJSON();
+    let currentSpot;
 
-  if (currentUser.id === spot.id) {
-    return next();
-  } else if (currentSpot.ownerId !== currentUser.id) {
-    const err = new Error();
-    err.message = 'Forbidden';
-    err.status = 403;
-    return next(err);
+    if (!spot) {
+      const err = new Error();
+      err.message = "Spot couldn't be found";
+      err.status = 404;
+      return next(err);
+    } else {
+      currentSpot = spot.toJSON();
+    }
+
+    if (currentUser.id === spot.id) {
+      return next();
+    } else if (currentSpot.ownerId !== currentUser.id) {
+      const err = new Error();
+      err.message = 'Forbidden';
+      err.status = 403;
+      return next(err);
+    }
+  }
+
+  if (reviewId && reviewId != null) {
+    const review = await Review.findOne({
+      where: [
+        {
+          userId: reviewId,
+        },
+      ],
+    });
+
+    let currentReview;
+
+    if (!review) {
+      const err = new Error();
+      err.message = "Review couldn't be found";
+      err.status = 404;
+      return next(err);
+    } else {
+      currentReview = review.toJSON();
+    }
+
+    if (currentUser.id === review.id) {
+      return next();
+    } else if (currentReview.ownerId !== currentUser.id) {
+      const err = new Error();
+      err.message = 'Forbidden';
+      err.status = 403;
+      return next(err);
+    }
   }
 };
 
