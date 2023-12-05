@@ -6,6 +6,20 @@ const { check } = require('express-validator');
 
 const router = express.Router();
 
+const validateReview = [
+  check('review')
+    .exists()
+    .withMessage('Review text is required')
+    .isLength({ min: 1, max: 256 })
+    .withMessage('Review text is required'),
+  check('stars')
+    .exists()
+    .withMessage('Stars must be an integer from 1 to 5')
+    .isInt({ min: 1, max: 5 })
+    .withMessage('Stars must be an integer from 1 to 5'),
+  handleValidationErrors,
+];
+
 // Get all Reviews of the Current User
 router.get('/current', requireAuth, async (req, res) => {
   const currentUser = req.user.toJSON();
@@ -79,9 +93,9 @@ router.post(
     }
 
     const images = await review.getImages({});
-    console.log(images.length)
+    console.log(images.length);
 
-    if(images.length < 11){
+    if (images.length < 11) {
       const newImage = await Image.create({
         imageableId: review.id,
         imageableType: 'Review',
@@ -95,10 +109,42 @@ router.post(
       });
     } else {
       return res.status(403).json({
-        message: "Maximum number of images for this resource was reached",
+        message: 'Maximum number of images for this resource was reached',
       });
     }
   }
 );
+
+// Edit a Review
+router.put(
+  '/:reviewId',
+  requireAuth,
+  isAuthorized,
+  validateReview,
+  async (req, res) => {
+    const review = await Review.findByPk(req.params.reviewId);
+
+    await review.update(req.body);
+
+    res.json(review);
+  }
+);
+
+// Delete a Review
+router.delete('/:reviewId', requireAuth, isAuthorized, async (req, res) => {
+  const review = await Review.findByPk(req.params.reviewId);
+
+  if (!review) {
+    return res.status(404).json({
+      message: "Spot couldn't be found",
+    });
+  }
+
+  await review.destroy();
+
+  res.json({
+    message: 'Successfully deleted',
+  });
+})
 
 module.exports = router;

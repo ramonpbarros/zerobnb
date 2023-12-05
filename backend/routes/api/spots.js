@@ -215,12 +215,6 @@ router.put(
       });
     }
 
-    // if (currentUser.id !== spot.id) {
-    //   return res.status(403).json({
-    //     message: 'Forbidden',
-    //   });
-    // }
-
     await spot.update(req.body);
 
     res.json(spot);

@@ -97,7 +97,7 @@ const isAuthorized = async function (req, _res, next) {
     }
   }
 
-  if(reviewId) {
+  if (reviewId && reviewId != null) {
     const review = await Review.findOne({
       where: [
         {
@@ -106,8 +106,17 @@ const isAuthorized = async function (req, _res, next) {
       ],
     });
 
-    let currentReview = review.toJSON();
+    console.log(review);
 
+    let currentReview;
+    if (!review) {
+      const err = new Error();
+      err.message = "Review couldn't be found";
+      err.status = 404;
+      return next(err);
+    } else {
+      currentReview = review.toJSON();
+    }
     if (currentUser.id === review.id) {
       return next();
     } else if (currentReview.ownerId !== currentUser.id) {
