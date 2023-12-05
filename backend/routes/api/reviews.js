@@ -134,12 +134,6 @@ router.put(
 router.delete('/:reviewId', requireAuth, isAuthorized, async (req, res) => {
   const review = await Review.findByPk(req.params.reviewId);
 
-  if (!review) {
-    return res.status(404).json({
-      message: "Spot couldn't be found",
-    });
-  }
-
   await review.destroy();
 
   res.json({
