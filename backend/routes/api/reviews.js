@@ -1,6 +1,6 @@
 const express = require('express');
 const { Review, Spot, User, Image } = require('../../db/models');
-const { requireAuth } = require('../../utils/auth');
+const { requireAuth, isAuthorized } = require('../../utils/auth');
 const { handleValidationErrors } = require('../../utils/validation');
 const { check } = require('express-validator');
 
@@ -61,5 +61,44 @@ router.get('/current', requireAuth, async (req, res) => {
 
   res.json({ Reviews: allReviews });
 });
+
+// Add an Image to a Review based on the Review's id
+router.post(
+  '/:reviewId/images',
+  requireAuth,
+  isAuthorized,
+  async (req, res) => {
+    const { url } = req.body;
+
+    const review = await Review.findByPk(req.params.reviewId);
+
+    if (!review) {
+      return res.status(404).json({
+        message: "Review couldn't be found",
+      });
+    }
+
+    const images = await review.getImages({});
+    console.log(images.length)
+
+    if(images.length < 11){
+      const newImage = await Image.create({
+        imageableId: review.id,
+        imageableType: 'Review',
+        url,
+        preview: false,
+      });
+
+      res.json({
+        id: newImage.id,
+        url: newImage.url,
+      });
+    } else {
+      return res.status(403).json({
+        message: "Maximum number of images for this resource was reached",
+      });
+    }
+  }
+);
 
 module.exports = router;
