@@ -1,5 +1,5 @@
 const express = require('express');
-const { Spot, Image, Review, User } = require('../../db/models');
+const { Spot, Image, Review, User, Booking } = require('../../db/models');
 const { requireAuth, isAuthorized } = require('../../utils/auth');
 const { handleValidationErrors } = require('../../utils/validation');
 const { check } = require('express-validator');
@@ -210,7 +210,7 @@ router.put(
 );
 
 // Delete a Spot
-router.delete('/:spotId',requireAuth, isAuthorized, async (req, res) => {
+router.delete('/:spotId', requireAuth, isAuthorized, async (req, res) => {
   const spot = await Spot.findByPk(req.params.spotId);
 
   await spot.destroy();
@@ -268,7 +268,7 @@ router.post(
     }
 
     const reviews = await spot.getReviews({});
-    console.log(reviews)
+    console.log(reviews);
 
     if (reviews.length) {
       return res.status(500).json({
@@ -292,4 +292,79 @@ router.post(
     res.status(201).json(newReview);
   }
 );
+
+// Get all Bookings for a Spot based on the Spot's id
+router.get('/:spotId/bookings', requireAuth, async (req, res) => {
+  const { id } = req.user.toJSON();
+
+  const currentUser = await User.findByPk(id, {
+    attributes: {
+      exclude: ['username', 'email', 'createdAt', 'updatedAt'],
+    },
+  });
+
+  const spot = await Spot.findByPk(req.params.spotId);
+
+  if (!spot) {
+    return res.status(404).json({
+      message: "Spot couldn't be found",
+    });
+  }
+
+  const bookings = await Booking.findAll({
+    where: {
+      spotId: req.params.spotId,
+    },
+  });
+
+  let formattedBookings = [];
+
+  if (id == req.params.spotId) {
+    bookings.map((booking) => {
+      const newTimeUpdatedAt = new Date(booking.updatedAt)
+        .toISOString()
+        .split('')
+        .slice(11, 19)
+        .join('');
+
+      const newDateUpdatedAt = new Date(booking.updatedAt)
+        .toISOString()
+        .split('T')[0];
+
+      const newTimeCreatedAt = new Date(booking.createdAt)
+        .toISOString()
+        .split('')
+        .slice(11, 19)
+        .join('');
+
+      const newDateCreatedAt = new Date(booking.createdAt)
+        .toISOString()
+        .split('T')[0];
+
+      formattedBookings.push({
+        User: currentUser,
+        id: booking.id,
+        spotId: booking.spotId,
+        userId: booking.userId,
+        startDate: new Date(booking.startDate).toISOString().split('T')[0],
+        endDate: new Date(booking.endDate).toISOString().split('T')[0],
+        createdAt: `${newDateCreatedAt} ${newTimeCreatedAt}`,
+        updatedAt: `${newDateUpdatedAt} ${newTimeUpdatedAt}`,
+      });
+    });
+
+    res.json({ Bookings: formattedBookings });
+  } else {
+    bookings.map((booking) => {
+      formattedBookings.push({
+        spotId: booking.spotId,
+        startDate: new Date(booking.startDate).toISOString().split('T')[0],
+        endDate: new Date(booking.endDate).toISOString().split('T')[0],
+      });
+    });
+
+    res.json({ Bookings: formattedBookings });
+  }
+});
+
 module.exports = router;
