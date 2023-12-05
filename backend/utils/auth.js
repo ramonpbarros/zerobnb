@@ -85,7 +85,16 @@ const isAuthorized = async function (req, _res, next) {
       ],
     });
 
-    let currentSpot = spot.toJSON();
+    let currentSpot;
+
+    if (!spot) {
+      const err = new Error();
+      err.message = "Spot couldn't be found";
+      err.status = 404;
+      return next(err);
+    } else {
+      currentSpot = spot.toJSON();
+    }
 
     if (currentUser.id === spot.id) {
       return next();
@@ -106,9 +115,8 @@ const isAuthorized = async function (req, _res, next) {
       ],
     });
 
-    console.log(review);
-
     let currentReview;
+
     if (!review) {
       const err = new Error();
       err.message = "Review couldn't be found";
@@ -117,6 +125,7 @@ const isAuthorized = async function (req, _res, next) {
     } else {
       currentReview = review.toJSON();
     }
+
     if (currentUser.id === review.id) {
       return next();
     } else if (currentReview.ownerId !== currentUser.id) {

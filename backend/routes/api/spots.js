@@ -178,12 +178,6 @@ router.post('/:spotId/images', requireAuth, isAuthorized, async (req, res) => {
 
   const spot = await Spot.findByPk(req.params.spotId);
 
-  if (!spot) {
-    return res.status(404).json({
-      message: "Spot couldn't be found",
-    });
-  }
-
   const newImage = await Image.create({
     imageableId: spot.id,
     imageableType: 'Spot',
@@ -209,12 +203,6 @@ router.put(
 
     const spot = await Spot.findByPk(spotId);
 
-    if (!spot) {
-      return res.status(404).json({
-        message: "Spot couldn't be found",
-      });
-    }
-
     await spot.update(req.body);
 
     res.json(spot);
@@ -222,14 +210,8 @@ router.put(
 );
 
 // Delete a Spot
-router.delete('/:spotId', isAuthorized, async (req, res) => {
+router.delete('/:spotId',requireAuth, isAuthorized, async (req, res) => {
   const spot = await Spot.findByPk(req.params.spotId);
-
-  if (!spot) {
-    return res.status(404).json({
-      message: "Spot couldn't be found",
-    });
-  }
 
   await spot.destroy();
 
