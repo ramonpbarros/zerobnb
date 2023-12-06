@@ -207,4 +207,23 @@ router.put(
   }
 );
 
+router.delete('/:bookingId', requireAuth, isAuthorized, async (req, res) => {
+  const booking = await Booking.findByPk(req.params.bookingId);
+
+  let currentBooking = booking.toJSON();
+  console.log(currentBooking);
+
+  if (new Date(currentBooking.startDate) <= new Date()) {
+    return res.status(403).json({
+      message: "Bookings that have been started can't be deleted",
+    });
+  }
+
+  await booking.destroy();
+
+  res.json({
+    message: 'Successfully deleted',
+  });
+});
+
 module.exports = router;
