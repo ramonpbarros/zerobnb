@@ -1,6 +1,6 @@
 const jwt = require('jsonwebtoken');
 const { jwtConfig } = require('../config');
-const { User, Spot, Review } = require('../db/models');
+const { User, Spot, Review, Booking } = require('../db/models');
 
 const { secret, expiresIn } = jwtConfig;
 
@@ -75,6 +75,7 @@ const isAuthorized = async function (req, _res, next) {
   const currentUser = req.user.toJSON();
   const spotId = req.params.spotId;
   const reviewId = req.params.reviewId;
+  const bookingId = req.params.bookingId;
 
   if (spotId) {
     const spot = await Spot.findOne({
@@ -129,6 +130,36 @@ const isAuthorized = async function (req, _res, next) {
     if (currentUser.id === review.id) {
       return next();
     } else if (currentReview.ownerId !== currentUser.id) {
+      const err = new Error();
+      err.message = 'Forbidden';
+      err.status = 403;
+      return next(err);
+    }
+  }
+
+  if (bookingId) {
+    const booking = await Booking.findOne({
+      where: [
+        {
+          id: bookingId,
+        },
+      ],
+    });
+
+    let currentBooking;
+
+    if (!booking) {
+      const err = new Error();
+      err.message = "Booking couldn't be found";
+      err.status = 404;
+      return next(err);
+    } else {
+      currentBooking = booking.toJSON();
+    }
+
+    if (currentUser.id === booking.userId) {
+      return next();
+    } else if (currentBooking.userId !== currentUser.id) {
       const err = new Error();
       err.message = 'Forbidden';
       err.status = 403;
