@@ -74,12 +74,75 @@ const validateBooking = [
   handleValidationErrors,
 ];
 
+const validateGetAllSpots = [
+  check('page')
+    .isInt({ min: 1, max: 10 })
+    .withMessage('Page must be an integer between 1 and 10')
+    .toInt(),
+
+  check('size')
+    .isInt({ min: 1, max: 20 })
+    .withMessage('Size must be an integer between 1 and 20')
+    .toInt(),
+
+  check('minLat')
+    .optional()
+    .isFloat()
+    .withMessage('Minimum latitude must be a decimal'),
+
+  check('maxLat')
+    .optional()
+    .isFloat()
+    .withMessage('Maximum latitude must be a decimal'),
+
+  check('minLng')
+    .optional()
+    .isFloat()
+    .withMessage('Minimum longitude must be a decimal'),
+
+  check('maxLng')
+    .optional()
+    .isFloat()
+    .withMessage('Maximum longitude must be a decimal'),
+
+  check('minPrice')
+    .optional()
+    .isFloat({ min: 0 })
+    .withMessage('Minimum price must be a decimal greater than or equal to 0'),
+
+  check('maxPrice')
+    .optional()
+    .isFloat({ min: 0 })
+    .withMessage('Maximum price must be a decimal greater than or equal to 0'),
+
+  handleValidationErrors,
+];
+
 // Get all Spots
-router.get('/', async (req, res) => {
+router.get('/', validateGetAllSpots, async (req, res) => {
+  let page = parseInt(req.query.page);
+  let size = parseInt(req.query.size);
+
+  if (isNaN(page)) {
+    page = 1;
+  }
+  if (isNaN(size)) {
+    size = 10;
+  }
+
+  let limit = size;
+  let offset = (page - 1) * size;
+
+  if (page == 0 && size == 0) {
+    limit = null;
+    offset = null;
+    page = 1;
+  }
   const spots = await Spot.findAll({
     include: [{ model: Image }, { model: Review }],
+    limit,
+    offset,
   });
-
   let allSpots = [];
 
   spots.forEach((spot) => {
@@ -90,6 +153,26 @@ router.get('/', async (req, res) => {
     const reviews = spot.Reviews || [];
     const totalStars = reviews.reduce((sum, review) => sum + review.stars, 0);
     const avgRating = reviews.length > 0 ? totalStars / reviews.length : 0;
+
+    const newTimeUpdatedAt = new Date(spot.updatedAt)
+      .toISOString()
+      .split('')
+      .slice(11, 19)
+      .join('');
+
+    const newDateUpdatedAt = new Date(spot.updatedAt)
+      .toISOString()
+      .split('T')[0];
+
+    const newTimeCreatedAt = new Date(spot.createdAt)
+      .toISOString()
+      .split('')
+      .slice(11, 19)
+      .join('');
+
+    const newDateCreatedAt = new Date(spot.createdAt)
+      .toISOString()
+      .split('T')[0];
 
     spot.Reviews.forEach((review) => {
       if (review.stars) {
@@ -103,6 +186,9 @@ router.get('/', async (req, res) => {
       }
     });
 
+    spot.createdAt = `${newDateCreatedAt} ${newTimeCreatedAt}`;
+    spot.updatedAt = `${newDateUpdatedAt} ${newTimeUpdatedAt}`;
+
     if (!spot.previewImage) {
       spot.previewImage = 'No preview image found';
     }
@@ -111,7 +197,7 @@ router.get('/', async (req, res) => {
     delete spot.Reviews;
   });
 
-  res.json(allSpots);
+  res.json({ Spots: allSpots, page, size });
 });
 
 // Get all spots owned by the current user
