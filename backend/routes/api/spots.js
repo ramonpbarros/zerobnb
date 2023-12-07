@@ -1,4 +1,5 @@
 const express = require('express');
+const { Op } = require('sequelize');
 const { Spot, Image, Review, User, Booking } = require('../../db/models');
 const { requireAuth, isAuthorized } = require('../../utils/auth');
 const { handleValidationErrors } = require('../../utils/validation');
@@ -46,6 +47,30 @@ const validateReview = [
     .withMessage('Stars must be an integer from 1 to 5')
     .isInt({ min: 1, max: 5 })
     .withMessage('Stars must be an integer from 1 to 5'),
+  handleValidationErrors,
+];
+
+const validateBooking = [
+  check('startDate')
+    .exists()
+    .withMessage('startDate cannot be in the past')
+    .custom((value, { req }) => {
+      if (new Date(value) < new Date()) {
+        throw new Error('startDate cannot be in the past');
+      }
+      return true;
+    }),
+  check('endDate')
+    .exists()
+    .withMessage('endDate cannot be on or before startDate')
+    .custom((value, { req }) => {
+      const startDate = new Date(req.body.startDate);
+      const endDate = new Date(value);
+      if (endDate <= startDate) {
+        throw new Error('endDate cannot be on or before startDate');
+      }
+      return true;
+    }),
   handleValidationErrors,
 ];
 
@@ -268,7 +293,6 @@ router.post(
     }
 
     const reviews = await spot.getReviews({});
-    console.log(reviews);
 
     if (reviews.length) {
       return res.status(500).json({
@@ -366,5 +390,115 @@ router.get('/:spotId/bookings', requireAuth, async (req, res) => {
     res.json({ Bookings: formattedBookings });
   }
 });
+
+// Create a Booking from a Spot based on the Spot's id
+router.post(
+  '/:spotId/bookings',
+  requireAuth,
+  validateBooking,
+  async (req, res) => {
+    const currentUser = req.user.toJSON();
+
+    const spot = await Spot.findByPk(req.params.spotId);
+
+    if (!spot)
+      return res.status(404).json({ message: "Spot couldn't be found" });
+
+    let currentSpot = spot.toJSON();
+
+    if (currentSpot.ownerId !== currentUser.id) {
+      const startDate = new Date(req.body.startDate);
+      const endDate = new Date(req.body.endDate);
+
+      const existingBooking = await Booking.findAll({
+        where: {
+          [Op.or]: [
+            { startDate: { [Op.between]: [startDate, endDate] } },
+            { endDate: { [Op.between]: [startDate, endDate] } },
+            {
+              startDate: { [Op.lte]: startDate },
+              endDate: { [Op.gte]: endDate },
+            },
+          ],
+        },
+      });
+
+      if (existingBooking.length > 0) {
+        const conflictingStartDate = existingBooking.some(
+          (booking) =>
+            startDate >= booking.startDate && startDate <= booking.endDate
+        );
+        const conflictingEndDate = existingBooking.some(
+          (booking) =>
+            endDate >= booking.startDate && endDate <= booking.endDate
+        );
+
+        const errors = {};
+
+        if (conflictingEndDate) {
+          errors.endDate = 'End date conflicts with an existing booking';
+        }
+
+        if (conflictingStartDate) {
+          errors.startDate = 'Start date conflicts with an existing booking';
+        }
+
+        return res.status(403).json({
+          message: 'Sorry, this spot is already booked for the specified dates',
+          errors,
+        });
+      } else {
+        await Booking.create({
+          userId: currentUser.id,
+          spotId: currentSpot.id,
+          startDate,
+          endDate,
+        });
+      }
+
+      let currentBooking = await Booking.findAll({
+        where: {
+          spotId: req.params.spotId,
+          userId: currentUser.id,
+        },
+      });
+
+      const formattedBookings = [];
+
+      currentBooking.map((booking) => {
+        const newTimeUpdatedAt = new Date(booking.updatedAt)
+          .toISOString()
+          .split('')
+          .slice(11, 19)
+          .join('');
+
+        const newDateUpdatedAt = new Date(booking.updatedAt)
+          .toISOString()
+          .split('T')[0];
+
+        const newTimeCreatedAt = new Date(booking.createdAt)
+          .toISOString()
+          .split('')
+          .slice(11, 19)
+          .join('');
+
+        const newDateCreatedAt = new Date(booking.createdAt)
+          .toISOString()
+          .split('T')[0];
+
+        formattedBookings.push({
+          userId: booking.userId,
+          spotId: booking.spotId,
+          startDate: new Date(booking.startDate).toISOString().split('T')[0],
+          endDate: new Date(booking.endDate).toISOString().split('T')[0],
+          createdAt: `${newDateCreatedAt} ${newTimeCreatedAt}`,
+          updatedAt: `${newDateUpdatedAt} ${newTimeUpdatedAt}`,
+        });
+      });
+
+      res.status(200).json(formattedBookings);
+    }
+  }
+);
 
 module.exports = router;
