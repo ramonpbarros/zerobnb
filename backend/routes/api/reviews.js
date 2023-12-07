@@ -1,24 +1,9 @@
 const express = require('express');
 const { Review, Spot, User, Image } = require('../../db/models');
 const { requireAuth, isAuthorized } = require('../../utils/auth');
-const { handleValidationErrors } = require('../../utils/validation');
-const { check } = require('express-validator');
+const { validateReview } = require('../../utils/sequelize-validations');
 
 const router = express.Router();
-
-const validateReview = [
-  check('review')
-    .exists()
-    .withMessage('Review text is required')
-    .isLength({ min: 1, max: 256 })
-    .withMessage('Review text is required'),
-  check('stars')
-    .exists()
-    .withMessage('Stars must be an integer from 1 to 5')
-    .isInt({ min: 1, max: 5 })
-    .withMessage('Stars must be an integer from 1 to 5'),
-  handleValidationErrors,
-];
 
 // Get all Reviews of the Current User
 router.get('/current', requireAuth, async (req, res) => {
@@ -132,6 +117,6 @@ router.delete('/:reviewId', requireAuth, isAuthorized, async (req, res) => {
   res.json({
     message: 'Successfully deleted',
   });
-})
+});
 
 module.exports = router;
