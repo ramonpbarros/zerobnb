@@ -19,6 +19,7 @@ router.get('/current', requireAuth, async (req, res) => {
   const allReviews = await Promise.all(
     reviews.map(async (review) => {
       const reviewJson = review.toJSON();
+      console.log(reviewJson)
 
       const newTimeUpdatedAt = new Date(review.updatedAt)
         .toISOString()
@@ -40,10 +41,8 @@ router.get('/current', requireAuth, async (req, res) => {
         .toISOString()
         .split('T')[0];
 
-        reviewJson.createdAt = `${newDateCreatedAt} ${newTimeCreatedAt}`,
-        reviewJson.updatedAt = `${newDateUpdatedAt} ${newTimeUpdatedAt}`,
-
-      console.log(reviewJson.createdAt)
+      reviewJson.createdAt = `${newDateCreatedAt} ${newTimeCreatedAt}`;
+      reviewJson.updatedAt = `${newDateUpdatedAt} ${newTimeUpdatedAt}`;
 
       if (reviewJson.User) {
         const { username, ...userWithoutUsername } = reviewJson.User;
@@ -68,8 +67,15 @@ router.get('/current', requireAuth, async (req, res) => {
         reviewJson.Spot = spotWithoutUnnecessary;
       }
 
-      if (reviewJson.Images && reviewJson.Images.length > 0) {
-        const imagesWithIdAndUrl = reviewJson.Images.map((image) => ({
+      if (reviewJson.Images) {
+        const images = await Image.findAll({
+          where: {
+            imageableType: 'Review',
+            imageableId: reviewJson.Spot.id,
+          },
+        });
+
+        const imagesWithIdAndUrl = images.map((image) => ({
           id: image.id,
           url: image.url,
         }));
