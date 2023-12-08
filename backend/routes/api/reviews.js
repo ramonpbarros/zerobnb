@@ -19,7 +19,6 @@ router.get('/current', requireAuth, async (req, res) => {
   const allReviews = await Promise.all(
     reviews.map(async (review) => {
       const reviewJson = review.toJSON();
-      console.log(reviewJson)
 
       const newTimeUpdatedAt = new Date(review.updatedAt)
         .toISOString()
