@@ -34,10 +34,11 @@ const validateEditSpot = [
   check('address')
     .optional()
     .exists()
+    .notEmpty()
     .withMessage('Street address is required'),
-  check('city').optional().exists().withMessage('City is required'),
-  check('state').optional().exists().withMessage('State is required'),
-  check('country').optional().exists().withMessage('Country is required'),
+  check('city').optional().exists().notEmpty().withMessage('City is required'),
+  check('state').optional().exists().notEmpty().withMessage('State is required'),
+  check('country').optional().exists().notEmpty().withMessage('Country is required'),
   check('lat')
     .optional()
     .exists()
@@ -59,6 +60,7 @@ const validateEditSpot = [
   check('description')
     .optional()
     .exists()
+    .notEmpty()
     .withMessage('Description is required'),
   check('price')
     .optional()

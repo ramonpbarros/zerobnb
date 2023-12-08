@@ -233,9 +233,34 @@ router.put(
 
     const spot = await Spot.findByPk(spotId);
 
-    await spot.update(req.body);
+    const spotUpdated = await spot.update(req.body);
 
-    res.json(spot);
+    let currentSpot = spotUpdated.toJSON();
+
+    const newTimeUpdatedAt = new Date(currentSpot.updatedAt)
+      .toISOString()
+      .split('')
+      .slice(11, 19)
+      .join('');
+
+    const newDateUpdatedAt = new Date(currentSpot.updatedAt)
+      .toISOString()
+      .split('T')[0];
+
+    const newTimeCreatedAt = new Date(currentSpot.createdAt)
+      .toISOString()
+      .split('')
+      .slice(11, 19)
+      .join('');
+
+    const newDateCreatedAt = new Date(currentSpot.createdAt)
+      .toISOString()
+      .split('T')[0];
+
+    currentSpot.createdAt = `${newDateCreatedAt} ${newTimeCreatedAt}`;
+    currentSpot.updatedAt = `${newDateUpdatedAt} ${newTimeUpdatedAt}`;
+
+    res.json(currentSpot);
   }
 );
 
