@@ -5,7 +5,7 @@ const { requireAuth, isAuthorized } = require('../../utils/auth');
 const {
   validateCreateSpot,
   validateEditSpot,
-  validateReview,
+  validateCreateReview,
   validateBooking,
   validateGetAllSpots,
 } = require('../../utils/sequelize-validations');
@@ -310,7 +310,7 @@ router.get('/:spotId/reviews', async (req, res) => {
 router.post(
   '/:spotId/reviews',
   requireAuth,
-  validateReview,
+  validateCreateReview,
   async (req, res) => {
     const currentUser = req.user.toJSON();
     const spot = await Spot.findByPk(req.params.spotId);

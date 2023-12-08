@@ -71,7 +71,7 @@ const validateEditSpot = [
   handleValidationErrors,
 ];
 
-const validateReview = [
+const validateCreateReview = [
   check('review')
     .exists()
     .withMessage('Review text is required')
@@ -171,7 +171,7 @@ const validateGetAllSpots = [
 module.exports = {
   validateCreateSpot,
   validateEditSpot,
-  validateReview,
+  validateCreateReview,
   validateEditReview,
   validateBooking,
   validateGetAllSpots,
