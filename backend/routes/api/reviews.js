@@ -20,6 +20,31 @@ router.get('/current', requireAuth, async (req, res) => {
     reviews.map(async (review) => {
       const reviewJson = review.toJSON();
 
+      const newTimeUpdatedAt = new Date(review.updatedAt)
+        .toISOString()
+        .split('')
+        .slice(11, 19)
+        .join('');
+
+      const newDateUpdatedAt = new Date(review.updatedAt)
+        .toISOString()
+        .split('T')[0];
+
+      const newTimeCreatedAt = new Date(review.createdAt)
+        .toISOString()
+        .split('')
+        .slice(11, 19)
+        .join('');
+
+      const newDateCreatedAt = new Date(review.createdAt)
+        .toISOString()
+        .split('T')[0];
+
+        reviewJson.createdAt = `${newDateCreatedAt} ${newTimeCreatedAt}`,
+        reviewJson.updatedAt = `${newDateUpdatedAt} ${newTimeUpdatedAt}`,
+
+      console.log(reviewJson.createdAt)
+
       if (reviewJson.User) {
         const { username, ...userWithoutUsername } = reviewJson.User;
         reviewJson.User = userWithoutUsername;
