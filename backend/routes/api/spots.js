@@ -229,9 +229,7 @@ router.put(
   isAuthorized,
   validateEditSpot,
   async (req, res) => {
-    const spotId = req.params.spotId;
-
-    const spot = await Spot.findByPk(spotId);
+    const spot = await Spot.findByPk(req.params.spotId);
 
     const spotUpdated = await spot.update(req.body);
 

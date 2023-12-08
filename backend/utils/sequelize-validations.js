@@ -85,6 +85,21 @@ const validateReview = [
   handleValidationErrors,
 ];
 
+const validateEditReview = [
+  check('review')
+  .optional()
+    .exists()
+    .notEmpty()
+    .withMessage('Review text is required'),
+  check('stars')
+  .optional()
+    .exists()
+    .withMessage('Stars must be an integer from 1 to 5')
+    .isInt({ min: 1, max: 5 })
+    .withMessage('Stars must be an integer from 1 to 5'),
+  handleValidationErrors,
+];
+
 const validateBooking = [
   check('startDate')
     .exists()
@@ -157,6 +172,7 @@ module.exports = {
   validateCreateSpot,
   validateEditSpot,
   validateReview,
+  validateEditReview,
   validateBooking,
   validateGetAllSpots,
 };

@@ -1,7 +1,7 @@
 const express = require('express');
 const { Review, Spot, User, Image } = require('../../db/models');
 const { requireAuth, isAuthorized } = require('../../utils/auth');
-const { validateReview } = require('../../utils/sequelize-validations');
+const { validateEditReview } = require('../../utils/sequelize-validations');
 
 const router = express.Router();
 
@@ -128,13 +128,38 @@ router.put(
   '/:reviewId',
   requireAuth,
   isAuthorized,
-  validateReview,
+  validateEditReview,
   async (req, res) => {
     const review = await Review.findByPk(req.params.reviewId);
 
-    await review.update(req.body);
+    const reviewUpdated = await review.update(req.body);
 
-    res.json(review);
+    let currentReview = reviewUpdated.toJSON()
+
+    const newTimeUpdatedAt = new Date(currentReview.updatedAt)
+      .toISOString()
+      .split('')
+      .slice(11, 19)
+      .join('');
+
+    const newDateUpdatedAt = new Date(currentReview.updatedAt)
+      .toISOString()
+      .split('T')[0];
+
+    const newTimeCreatedAt = new Date(currentReview.createdAt)
+      .toISOString()
+      .split('')
+      .slice(11, 19)
+      .join('');
+
+    const newDateCreatedAt = new Date(currentReview.createdAt)
+      .toISOString()
+      .split('T')[0];
+
+    currentReview.createdAt = `${newDateCreatedAt} ${newTimeCreatedAt}`;
+    currentReview.updatedAt = `${newDateUpdatedAt} ${newTimeUpdatedAt}`;
+
+    res.json(currentReview);
   }
 );
 
