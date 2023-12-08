@@ -174,7 +174,32 @@ router.post('/', requireAuth, validateCreateSpot, async (req, res) => {
     price,
   });
 
-  res.status(201).json(newSpot);
+  let currentNewSpot = newSpot.toJSON();
+
+  const newTimeUpdatedAt = new Date(currentNewSpot.updatedAt)
+    .toISOString()
+    .split('')
+    .slice(11, 19)
+    .join('');
+
+  const newDateUpdatedAt = new Date(currentNewSpot.updatedAt)
+    .toISOString()
+    .split('T')[0];
+
+  const newTimeCreatedAt = new Date(currentNewSpot.createdAt)
+    .toISOString()
+    .split('')
+    .slice(11, 19)
+    .join('');
+
+  const newDateCreatedAt = new Date(currentNewSpot.createdAt)
+    .toISOString()
+    .split('T')[0];
+
+  currentNewSpot.createdAt = `${newDateCreatedAt} ${newTimeCreatedAt}`;
+  currentNewSpot.updatedAt = `${newDateUpdatedAt} ${newTimeUpdatedAt}`;
+
+  res.status(201).json(currentNewSpot);
 });
 
 // Add an Image to a Spot based on the Spot's id

@@ -2,10 +2,10 @@ const { handleValidationErrors } = require('./validation');
 const { check } = require('express-validator');
 
 const validateCreateSpot = [
-  check('address').exists().withMessage('Street address is required'),
-  check('city').exists().withMessage('City is required'),
-  check('state').exists().withMessage('State is required'),
-  check('country').exists().withMessage('Country is required'),
+  check('address').exists().notEmpty().withMessage('Street address is required'),
+  check('city').exists().notEmpty().withMessage('City is required'),
+  check('state').exists().notEmpty().withMessage('State is required'),
+  check('country').exists().notEmpty().withMessage('Country is required'),
   check('lat')
     .exists()
     .withMessage('Latitude is required')
@@ -21,7 +21,7 @@ const validateCreateSpot = [
     .withMessage('Name is required')
     .isLength({ max: 50 })
     .withMessage('Name must be less than 50 characters'),
-  check('description').exists().withMessage('Description is required'),
+  check('description').exists().notEmpty().withMessage('Description is required'),
   check('price')
     .exists()
     .withMessage('Price per day is required')
