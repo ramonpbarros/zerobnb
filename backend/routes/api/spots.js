@@ -290,6 +290,7 @@ router.post(
   validateReview,
   async (req, res) => {
     const spot = await Spot.findByPk(req.params.spotId);
+    const currentUser = req.user.toJSON();
 
     if (!spot) {
       return res.status(404).json({
@@ -297,9 +298,14 @@ router.post(
       });
     }
 
-    const reviews = await spot.getReviews({});
+    let currentReview;
 
-    if (reviews.length) {
+    const reviews = await spot.getReviews({});
+    reviews.map((review) => {
+      currentReview = review.toJSON();
+    });
+
+    if (reviews.length > 0 && currentReview.userId === currentUser.id) {
       return res.status(500).json({
         message: 'User already has a review for this spot',
       });
@@ -309,8 +315,6 @@ router.post(
 
     const { review, stars } = req.body;
 
-    const currentUser = req.user.toJSON();
-
     const newReview = await Review.create({
       userId: currentUser.id,
       spotId: currentSpot.id,
@@ -318,7 +322,32 @@ router.post(
       stars,
     });
 
-    res.status(201).json(newReview);
+    let currentNewReview = newReview.toJSON();
+
+    const newTimeUpdatedAt = new Date(currentNewReview.updatedAt)
+      .toISOString()
+      .split('')
+      .slice(11, 19)
+      .join('');
+
+    const newDateUpdatedAt = new Date(currentNewReview.updatedAt)
+      .toISOString()
+      .split('T')[0];
+
+    const newTimeCreatedAt = new Date(currentNewReview.createdAt)
+      .toISOString()
+      .split('')
+      .slice(11, 19)
+      .join('');
+
+    const newDateCreatedAt = new Date(currentNewReview.createdAt)
+      .toISOString()
+      .split('T')[0];
+
+    currentNewReview.createdAt = `${newDateCreatedAt} ${newTimeCreatedAt}`;
+    currentNewReview.updatedAt = `${newDateUpdatedAt} ${newTimeUpdatedAt}`;
+
+    res.status(201).json(currentNewReview);
   }
 );
 
