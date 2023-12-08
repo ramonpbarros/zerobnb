@@ -289,8 +289,8 @@ router.post(
   requireAuth,
   validateReview,
   async (req, res) => {
-    const spot = await Spot.findByPk(req.params.spotId);
     const currentUser = req.user.toJSON();
+    const spot = await Spot.findByPk(req.params.spotId);
 
     if (!spot) {
       return res.status(404).json({
@@ -432,11 +432,13 @@ router.post(
   validateBooking,
   async (req, res) => {
     const currentUser = req.user.toJSON();
-
     const spot = await Spot.findByPk(req.params.spotId);
 
-    if (!spot)
-      return res.status(404).json({ message: "Spot couldn't be found" });
+    if (!spot) {
+      return res.status(404).json({
+        message: "Spot couldn't be found",
+      });
+    }
 
     let currentSpot = spot.toJSON();
 
@@ -531,6 +533,10 @@ router.post(
       });
 
       res.status(200).json(formattedBookings);
+    } else {
+      return res.status(403).json({
+        message: 'Forbbiden',
+      });
     }
   }
 );
