@@ -2,7 +2,7 @@ const express = require('express');
 const { Op } = require('sequelize');
 const { Booking, Spot, Image } = require('../../db/models');
 const { requireAuth, isAuthorized } = require('../../utils/auth');
-const { validateBooking } = require('../../utils/sequelize-validations');
+const { validateEditBooking } = require('../../utils/sequelize-validations');
 
 const router = express.Router();
 
@@ -87,7 +87,7 @@ router.put(
   '/:bookingId',
   requireAuth,
   isAuthorized,
-  validateBooking,
+  validateEditBooking,
   async (req, res) => {
     const booking = await Booking.findByPk(req.params.bookingId);
 

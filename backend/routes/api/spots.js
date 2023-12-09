@@ -6,7 +6,7 @@ const {
   validateCreateSpot,
   validateEditSpot,
   validateCreateReview,
-  validateBooking,
+  validateCreateBooking,
   validateGetAllSpots,
 } = require('../../utils/sequelize-validations');
 
@@ -32,66 +32,40 @@ router.get('/', validateGetAllSpots, async (req, res) => {
     offset = null;
     page = 1;
   }
+
   const spots = await Spot.findAll({
     include: [{ model: Image }, { model: Review }],
     limit,
     offset,
   });
-  let allSpots = [];
 
-  spots.forEach((spot) => {
-    allSpots.push(spot.toJSON());
-  });
 
-  allSpots.forEach((spot) => {
-    const reviews = spot.Reviews || [];
-    const totalStars = reviews.reduce((sum, review) => sum + review.stars, 0);
-    const avgRating = reviews.length > 0 ? totalStars / reviews.length : 0;
+    const formattedSpots = spots.map((spot) => {
+      const formattedSpot = spot.toJSON();
 
-    const newTimeUpdatedAt = new Date(spot.updatedAt)
-      .toISOString()
-      .split('')
-      .slice(11, 19)
-      .join('');
+      const reviews = formattedSpot.Reviews || [];
+      const totalStars = reviews.reduce((sum, review) => sum + review.stars, 0);
+      const avgRating = reviews.length > 0 ? totalStars / reviews.length : 0;
 
-    const newDateUpdatedAt = new Date(spot.updatedAt)
-      .toISOString()
-      .split('T')[0];
+      formattedSpot.avgRating = avgRating;
 
-    const newTimeCreatedAt = new Date(spot.createdAt)
-      .toISOString()
-      .split('')
-      .slice(11, 19)
-      .join('');
-
-    const newDateCreatedAt = new Date(spot.createdAt)
-      .toISOString()
-      .split('T')[0];
-
-    spot.Reviews.forEach((review) => {
-      if (review.stars) {
-        spot.avgRating = avgRating;
+      if (formattedSpot.Images && formattedSpot.Images.length > 0) {
+        formattedSpot.previewImage = formattedSpot.Images[0].url;
+        delete formattedSpot.Images;
+      } else {
+        formattedSpot.previewImage = 'No preview image found';
       }
+
+      delete formattedSpot.Reviews;
+      delete formattedSpot.createdAt;
+      delete formattedSpot.updatedAt;
+
+      return formattedSpot;
     });
 
-    spot.Images.forEach((image) => {
-      if (image.url) {
-        spot.previewImage = image.url;
-      }
-    });
+    res.json({ Spots: formattedSpots, page, size });
 
-    spot.createdAt = `${newDateCreatedAt} ${newTimeCreatedAt}`;
-    spot.updatedAt = `${newDateUpdatedAt} ${newTimeUpdatedAt}`;
-
-    if (!spot.previewImage) {
-      spot.previewImage = 'No preview image found';
-    }
-
-    delete spot.Images;
-    delete spot.Reviews;
-  });
-
-  res.json({ Spots: allSpots, page, size });
+  res.json({ Spots: spots, page, size });
 });
 
 // Get all spots owned by the current user
@@ -452,7 +426,7 @@ router.get('/:spotId/bookings', requireAuth, async (req, res) => {
 router.post(
   '/:spotId/bookings',
   requireAuth,
-  validateBooking,
+  validateCreateBooking,
   async (req, res) => {
     const currentUser = req.user.toJSON();
     const spot = await Spot.findByPk(req.params.spotId);

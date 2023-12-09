@@ -130,8 +130,8 @@ const isAuthorized = async function (req, _res, next) {
     if (currentUser.id === review.id) {
       return next();
     } else if (currentReview.ownerId !== currentUser.id) {
-      const err = new Error();
-      err.message = 'Forbidden';
+      const err = new Error('Forbidden');
+      // err.message = ;
       err.status = 403;
       return next(err);
     }
