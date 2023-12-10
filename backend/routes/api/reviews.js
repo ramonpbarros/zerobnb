@@ -95,15 +95,31 @@ router.get('/current', requireAuth, async (req, res) => {
 router.post(
   '/:reviewId/images',
   requireAuth,
-  isAuthorized,
+  // isAuthorized,
   async (req, res) => {
     const { url } = req.body;
+    const currentUser = req.user.toJSON();
 
     const review = await Review.findByPk(req.params.reviewId);
 
-    const images = await review.getImages({});
+    let currentReview = review.toJSON();
 
-    if (images.length < 11) {
+    if (!review) {
+      return res.status(404).json({
+        message: "Review couldn't be found",
+      });
+    }
+
+    if (currentReview.userId !== currentUser.id) {
+      return res.status(403).json({
+        message: 'Forbidden',
+      });
+    }
+
+    const images = await review.getImages({});
+    console.log(images.length);
+
+    if (images.length  < 10) {
       const newImage = await Image.create({
         imageableId: review.id,
         imageableType: 'Review',
@@ -127,14 +143,30 @@ router.post(
 router.put(
   '/:reviewId',
   requireAuth,
-  isAuthorized,
+  // isAuthorized,
   validateEditReview,
   async (req, res) => {
+    const currentUser = req.user.toJSON();
+
     const review = await Review.findByPk(req.params.reviewId);
+
+    let currentReview = review.toJSON();
+
+    if (!review) {
+      return res.status(404).json({
+        message: "Review couldn't be found",
+      });
+    }
+
+    if (currentReview.userId !== currentUser.id) {
+      return res.status(403).json({
+        message: 'Forbidden',
+      });
+    }
 
     const reviewUpdated = await review.update(req.body);
 
-    let currentReview = reviewUpdated.toJSON()
+    currentReview = reviewUpdated.toJSON();
 
     const newTimeUpdatedAt = new Date(currentReview.updatedAt)
       .toISOString()

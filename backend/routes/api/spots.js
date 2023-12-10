@@ -39,33 +39,56 @@ router.get('/', validateGetAllSpots, async (req, res) => {
     offset,
   });
 
+  const formattedSpots = spots.map((spot) => {
+    const formattedSpot = spot.toJSON();
 
-    const formattedSpots = spots.map((spot) => {
-      const formattedSpot = spot.toJSON();
+    const newTimeUpdatedAt = new Date(formattedSpot.updatedAt)
+      .toISOString()
+      .split('')
+      .slice(11, 19)
+      .join('');
 
-      const reviews = formattedSpot.Reviews || [];
-      const totalStars = reviews.reduce((sum, review) => sum + review.stars, 0);
-      const avgRating = reviews.length > 0 ? totalStars / reviews.length : 0;
+    const newDateUpdatedAt = new Date(formattedSpot.updatedAt)
+      .toISOString()
+      .split('T')[0];
 
-      formattedSpot.avgRating = avgRating;
+    const newTimeCreatedAt = new Date(formattedSpot.createdAt)
+      .toISOString()
+      .split('')
+      .slice(11, 19)
+      .join('');
 
-      if (formattedSpot.Images && formattedSpot.Images.length > 0) {
-        formattedSpot.previewImage = formattedSpot.Images[0].url;
-        delete formattedSpot.Images;
-      } else {
-        formattedSpot.previewImage = 'No preview image found';
-      }
+    const newDateCreatedAt = new Date(formattedSpot.createdAt)
+      .toISOString()
+      .split('T')[0];
 
-      delete formattedSpot.Reviews;
-      delete formattedSpot.createdAt;
-      delete formattedSpot.updatedAt;
+    delete formattedSpot.createdAt;
+    delete formattedSpot.updatedAt;
 
-      return formattedSpot;
-    });
+    formattedSpot.createdAt = `${newDateCreatedAt} ${newTimeCreatedAt}`;
+    formattedSpot.updatedAt = `${newDateUpdatedAt} ${newTimeUpdatedAt}`;
 
-    res.json({ Spots: formattedSpots, page, size });
+    const reviews = formattedSpot.Reviews || [];
+    const totalStars = reviews.reduce((sum, review) => sum + review.stars, 0);
+    const avgRating = reviews.length > 0 ? totalStars / reviews.length : 0;
 
-  res.json({ Spots: spots, page, size });
+    formattedSpot.avgRating = avgRating;
+
+    if (formattedSpot.Images && formattedSpot.Images.length > 0) {
+      formattedSpot.previewImage = formattedSpot.Images[0].url;
+      delete formattedSpot.Images;
+    } else {
+      formattedSpot.previewImage = 'No preview image found';
+    }
+
+    delete formattedSpot.Reviews;
+
+    return formattedSpot;
+  });
+
+  res.json({ Spots: formattedSpots, page, size });
+
+  // res.json({ Spots: spots, page, size });
 });
 
 // Get all spots owned by the current user
@@ -78,7 +101,54 @@ router.get('/current', requireAuth, async (req, res) => {
     },
   });
 
-  res.json({ Spots: spots });
+  const formattedSpots = spots.map((spot) => {
+    const formattedSpot = spot.toJSON();
+
+    const newTimeUpdatedAt = new Date(formattedSpot.updatedAt)
+      .toISOString()
+      .split('')
+      .slice(11, 19)
+      .join('');
+
+    const newDateUpdatedAt = new Date(formattedSpot.updatedAt)
+      .toISOString()
+      .split('T')[0];
+
+    const newTimeCreatedAt = new Date(formattedSpot.createdAt)
+      .toISOString()
+      .split('')
+      .slice(11, 19)
+      .join('');
+
+    const newDateCreatedAt = new Date(formattedSpot.createdAt)
+      .toISOString()
+      .split('T')[0];
+
+    delete formattedSpot.createdAt;
+    delete formattedSpot.updatedAt;
+
+    formattedSpot.createdAt = `${newDateCreatedAt} ${newTimeCreatedAt}`;
+    formattedSpot.updatedAt = `${newDateUpdatedAt} ${newTimeUpdatedAt}`;
+
+    const reviews = formattedSpot.Reviews || [];
+    const totalStars = reviews.reduce((sum, review) => sum + review.stars, 0);
+    const avgRating = reviews.length > 0 ? totalStars / reviews.length : 0;
+
+    formattedSpot.avgRating = avgRating;
+
+    if (formattedSpot.Images && formattedSpot.Images.length > 0) {
+      formattedSpot.previewImage = formattedSpot.Images[0].url;
+      delete formattedSpot.Images;
+    } else {
+      formattedSpot.previewImage = 'No preview image found';
+    }
+
+    delete formattedSpot.Reviews;
+
+    return formattedSpot;
+  });
+
+  res.json({ Spots: formattedSpots });
 });
 
 // Get details of a Spot from an id
@@ -92,40 +162,68 @@ router.get('/:spotId', async (req, res) => {
     res.send({ message: "Spot couldn't be found" });
   }
 
-  let spotDetail = spot.toJSON();
+  const user = await User.findByPk(spot.ownerId, {
+    attributes: { exclude: ['username'] },
+  });
 
-  const reviews = spotDetail.Reviews || [];
+  const formattedUser = user.toJSON();
+
+  const formattedSpot = spot.toJSON();
+
+  const newTimeUpdatedAt = new Date(formattedSpot.updatedAt)
+    .toISOString()
+    .split('')
+    .slice(11, 19)
+    .join('');
+
+  const newDateUpdatedAt = new Date(formattedSpot.updatedAt)
+    .toISOString()
+    .split('T')[0];
+
+  const newTimeCreatedAt = new Date(formattedSpot.createdAt)
+    .toISOString()
+    .split('')
+    .slice(11, 19)
+    .join('');
+
+  const newDateCreatedAt = new Date(formattedSpot.createdAt)
+    .toISOString()
+    .split('T')[0];
+
+  delete formattedSpot.createdAt;
+  delete formattedSpot.updatedAt;
+
+  formattedSpot.createdAt = `${newDateCreatedAt} ${newTimeCreatedAt}`;
+  formattedSpot.updatedAt = `${newDateUpdatedAt} ${newTimeUpdatedAt}`;
+
+  formattedSpot.numReviews = spot.Reviews.length;
+
+  const reviews = formattedSpot.Reviews || [];
   const totalStars = reviews.reduce((sum, review) => sum + review.stars, 0);
   const avgRating = reviews.length > 0 ? totalStars / reviews.length : 0;
 
-  if (spotDetail.Reviews[0].stars) {
-    spotDetail.numReviews = spotDetail.Reviews.length;
-    spotDetail.avgStarRating = avgRating;
-    delete spotDetail.Reviews;
-  }
+  formattedSpot.avgStarRating = avgRating;
 
-  if (spotDetail.Images && spotDetail.Users.length > 0) {
-    spotDetail.SpotImages = spotDetail.Images.map((image) => ({
+  if (formattedSpot.Images) {
+    formattedSpot.Images = formattedSpot.Images.map((image) => ({
       id: image.id,
       url: image.url,
       preview: image.preview,
     }));
-    delete spotDetail.Images;
+    formattedSpot.SpotImages = formattedSpot.Images;
   }
 
-  if (spotDetail.Users && spotDetail.Users.length > 0) {
-    const owner = spotDetail.Users[0];
+  delete formattedSpot.Images;
 
-    spotDetail.Owner = {
-      id: owner.id,
-      firstName: owner.firstName,
-      lastName: owner.lastName,
-    };
-
-    delete spotDetail.Users;
+  if (formattedSpot.Users) {
+    (formattedSpot.id = formattedUser.id),
+      (formattedSpot.Owner = formattedUser);
   }
 
-  res.json(spotDetail);
+  delete formattedSpot.Users;
+  delete formattedSpot.Reviews;
+
+  res.json(formattedSpot);
 });
 
 // Create a Spot
@@ -442,6 +540,27 @@ router.post(
     if (currentSpot.ownerId !== currentUser.id) {
       const startDate = new Date(req.body.startDate);
       const endDate = new Date(req.body.endDate);
+
+      // const existingBooking = await Booking.findAll({
+      //   where: {
+      //     [Op.or]: [
+      //       { startDate: { [Op.between]: [startDate, endDate] } },
+      //       { endDate: { [Op.between]: [startDate, endDate] } },
+      //       {
+      //         startDate: { [Op.lte]: startDate },
+      //         endDate: { [Op.gte]: endDate },
+      //       },
+      //       {
+      //         startDate: { [Op.lte]: startDate },
+      //         endDate: { [Op.gte]: startDate },
+      //       },
+      //       {
+      //         startDate: { [Op.lte]: endDate },
+      //         endDate: { [Op.gte]: endDate },
+      //       },
+      //     ],
+      //   },
+      // });
 
       const existingBooking = await Booking.findAll({
         where: {

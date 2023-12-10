@@ -44,37 +44,36 @@ router.get('/current', requireAuth, async (req, res) => {
       delete currentSpot.Images;
     }
 
-      const newTimeUpdatedAt = new Date(currentBooking.updatedAt)
-        .toISOString()
-        .split('')
-        .slice(11, 19)
-        .join('');
+    const newTimeUpdatedAt = new Date(currentBooking.updatedAt)
+      .toISOString()
+      .split('')
+      .slice(11, 19)
+      .join('');
 
-      const newDateUpdatedAt = new Date(currentBooking.updatedAt)
-        .toISOString()
-        .split('T')[0];
+    const newDateUpdatedAt = new Date(currentBooking.updatedAt)
+      .toISOString()
+      .split('T')[0];
 
-      const newTimeCreatedAt = new Date(currentBooking.createdAt)
-        .toISOString()
-        .split('')
-        .slice(11, 19)
-        .join('');
+    const newTimeCreatedAt = new Date(currentBooking.createdAt)
+      .toISOString()
+      .split('')
+      .slice(11, 19)
+      .join('');
 
-      const newDateCreatedAt = new Date(currentBooking.createdAt)
-        .toISOString()
-        .split('T')[0];
+    const newDateCreatedAt = new Date(currentBooking.createdAt)
+      .toISOString()
+      .split('T')[0];
 
-      formattedBookings.push({
-        id: currentBooking.id,
-        spotId: currentBooking.spotId,
-        Spot: currentSpot,
-        userId: currentBooking.userId,
-        startDate: new Date(currentBooking.startDate).toISOString().split('T')[0],
-        endDate: new Date(currentBooking.endDate).toISOString().split('T')[0],
-        createdAt: `${newDateCreatedAt} ${newTimeCreatedAt}`,
-        updatedAt: `${newDateUpdatedAt} ${newTimeUpdatedAt}`,
-      });
-
+    formattedBookings.push({
+      id: currentBooking.id,
+      spotId: currentBooking.spotId,
+      Spot: currentSpot,
+      userId: currentBooking.userId,
+      startDate: new Date(currentBooking.startDate).toISOString().split('T')[0],
+      endDate: new Date(currentBooking.endDate).toISOString().split('T')[0],
+      createdAt: `${newDateCreatedAt} ${newTimeCreatedAt}`,
+      updatedAt: `${newDateUpdatedAt} ${newTimeUpdatedAt}`,
+    });
   }
 
   res.json({
@@ -89,6 +88,10 @@ router.put(
   isAuthorized,
   validateEditBooking,
   async (req, res) => {
+    if (!req.params.bookingId) {
+      return res.status(400).json({ message: 'Booking ID is missing' });
+    }
+
     const booking = await Booking.findByPk(req.params.bookingId);
 
     if (new Date(booking.endDate) < new Date()) {
@@ -100,89 +103,82 @@ router.put(
     const startDate = new Date(req.body.startDate);
     const endDate = new Date(req.body.endDate);
 
-    const existingBooking = await Booking.findAll({
+    const existingBookings = await Booking.findAll({
       where: {
-        [Op.or]: [
-          { startDate: { [Op.between]: [startDate, endDate] } },
-          { endDate: { [Op.between]: [startDate, endDate] } },
+        [Op.and]: [
+          { id: { [Op.ne]: req.params.bookingId } }, // Exclude the current booking from conflict check
           {
-            startDate: { [Op.lte]: startDate },
-            endDate: { [Op.gte]: endDate },
+            [Op.or]: [
+              { startDate: { [Op.between]: [startDate, endDate] } },
+              { endDate: { [Op.between]: [startDate, endDate] } },
+              {
+                startDate: { [Op.lte]: startDate },
+                endDate: { [Op.gte]: endDate },
+              },
+            ],
           },
         ],
       },
     });
 
-    if (existingBooking.length > 0) {
-      const conflictingStartDate = existingBooking.some(
-        (booking) =>
-          startDate >= booking.startDate && startDate <= booking.endDate
-      );
-      const conflictingEndDate = existingBooking.some(
-        (booking) => endDate >= booking.startDate && endDate <= booking.endDate
-      );
-
-      const errors = {};
-
-      if (conflictingEndDate) {
-        errors.endDate = 'End date conflicts with an existing booking';
-      }
-
-      if (conflictingStartDate) {
-        errors.startDate = 'Start date conflicts with an existing booking';
-      }
+    if (existingBookings.length > 0) {
+      const conflicts = {};
+      existingBookings.forEach((existingBooking) => {
+        if (
+          (startDate >= existingBooking.startDate && startDate <= existingBooking.endDate) ||
+          (endDate >= existingBooking.startDate && endDate <= existingBooking.endDate)
+        ) {
+          conflicts.startDate = 'Start date conflicts with an existing booking';
+          conflicts.endDate = 'End date conflicts with an existing booking';
+        }
+      });
 
       return res.status(403).json({
         message: 'Sorry, this spot is already booked for the specified dates',
-        errors,
+        errors: conflicts,
       });
     } else {
       await booking.update(req.body);
     }
 
-    let currentBooking = await Booking.findAll({
-      where: {
-        id: req.params.bookingId,
-      },
-    });
+    const updatedBooking = await Booking.findByPk(req.params.bookingId);
 
-    const formattedBookings = [];
-
-    currentBooking.map((booking) => {
-      const newTimeUpdatedAt = new Date(booking.updatedAt)
+    const newTimeUpdatedAt = new Date(updatedBooking.updatedAt)
         .toISOString()
         .split('')
         .slice(11, 19)
         .join('');
 
-      const newDateUpdatedAt = new Date(booking.updatedAt)
+      const newDateUpdatedAt = new Date(updatedBooking.updatedAt)
         .toISOString()
         .split('T')[0];
 
-      const newTimeCreatedAt = new Date(booking.createdAt)
+      const newTimeCreatedAt = new Date(updatedBooking.createdAt)
         .toISOString()
         .split('')
         .slice(11, 19)
         .join('');
 
-      const newDateCreatedAt = new Date(booking.createdAt)
+      const newDateCreatedAt = new Date(updatedBooking.createdAt)
         .toISOString()
         .split('T')[0];
 
-      formattedBookings.push({
-        userId: booking.userId,
-        spotId: booking.spotId,
-        startDate: new Date(booking.startDate).toISOString().split('T')[0],
-        endDate: new Date(booking.endDate).toISOString().split('T')[0],
-        createdAt: `${newDateCreatedAt} ${newTimeCreatedAt}`,
-        updatedAt: `${newDateUpdatedAt} ${newTimeUpdatedAt}`,
-      });
-    });
+
+    const formattedBookings = {
+      id: updatedBooking.id,
+      spotId: updatedBooking.spotId,
+      userId: updatedBooking.userId,
+      startDate: new Date(updatedBooking.startDate).toISOString().split('T')[0],
+      endDate: new Date(updatedBooking.endDate).toISOString().split('T')[0],
+      createdAt: `${newDateCreatedAt} ${newTimeCreatedAt}`,
+      updatedAt: `${newDateUpdatedAt} ${newTimeUpdatedAt}`,
+    };
 
     res.status(200).json(formattedBookings);
   }
 );
 
+// Delete a booking
 router.delete('/:bookingId', requireAuth, isAuthorized, async (req, res) => {
   const booking = await Booking.findByPk(req.params.bookingId);
 

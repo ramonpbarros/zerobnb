@@ -116,14 +116,10 @@ const validateEditReview = [
 
 const validateCreateBooking = [
   check('startDate')
+    // .optional()
     .exists()
-    .withMessage('startDate cannot be in the past')
-    .custom((value, { req }) => {
-      if (new Date(value) < new Date()) {
-        throw new Error('startDate cannot be in the past');
-      }
-      return true;
-    }),
+    .isAfter(new Date().toString())
+    .withMessage('startDate cannot be in the past'),
   check('endDate')
     .exists()
     .withMessage('endDate cannot be on or before startDate')
@@ -142,18 +138,12 @@ const validateEditBooking = [
   check('startDate')
     .optional()
     .exists()
-    .isAfter(new Date().toString())
-    .withMessage('startDate cannot be in the past'),
-
-  // check('startDate')
-  //   .optional()
-  //   .exists()
-  //   .custom((value, { req }) => {
-  //     if (value && new Date(value) < new Date()) {
-  //       throw new Error('startDate cannot be in the past');
-  //     }
-  //     return true;
-  //   }),
+    .custom((value, { req }) => {
+      if (value && new Date(value) < new Date()) {
+        throw new Error('startDate cannot be in the past');
+      }
+      return true;
+    }),
 
   check('endDate')
     .optional()

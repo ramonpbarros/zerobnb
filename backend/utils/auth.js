@@ -118,7 +118,7 @@ const isAuthorized = async function (req, _res, next) {
 
     let currentReview;
 
-    if (!review) {
+    if (!currentReview) {
       const err = new Error();
       err.message = "Review couldn't be found";
       err.status = 404;
@@ -127,11 +127,11 @@ const isAuthorized = async function (req, _res, next) {
       currentReview = review.toJSON();
     }
 
-    if (currentUser.id === review.id) {
+    if (currentReview.userId === currentUser.id) {
       return next();
-    } else if (currentReview.ownerId !== currentUser.id) {
-      const err = new Error('Forbidden');
-      // err.message = ;
+    } else if (currentReview.userId !== currentUser.id) {
+      const err = new Error();
+      err.message = 'Forbidden';
       err.status = 403;
       return next(err);
     }
