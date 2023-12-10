@@ -541,27 +541,6 @@ router.post(
       const startDate = new Date(req.body.startDate);
       const endDate = new Date(req.body.endDate);
 
-      // const existingBooking = await Booking.findAll({
-      //   where: {
-      //     [Op.or]: [
-      //       { startDate: { [Op.between]: [startDate, endDate] } },
-      //       { endDate: { [Op.between]: [startDate, endDate] } },
-      //       {
-      //         startDate: { [Op.lte]: startDate },
-      //         endDate: { [Op.gte]: endDate },
-      //       },
-      //       {
-      //         startDate: { [Op.lte]: startDate },
-      //         endDate: { [Op.gte]: startDate },
-      //       },
-      //       {
-      //         startDate: { [Op.lte]: endDate },
-      //         endDate: { [Op.gte]: endDate },
-      //       },
-      //     ],
-      //   },
-      // });
-
       const existingBooking = await Booking.findAll({
         where: {
           [Op.or]: [

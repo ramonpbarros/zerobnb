@@ -174,22 +174,23 @@ const validateGetAllSpots = [
 
   check('minLat')
     .optional()
-    .isFloat()
+    .isFloat({ min: -90 })
     .withMessage('Minimum latitude must be a decimal'),
 
   check('maxLat')
     .optional()
     .isFloat()
+    .isFloat({ max: 90 })
     .withMessage('Maximum latitude must be a decimal'),
 
   check('minLng')
     .optional()
-    .isFloat()
+    .isFloat({ min: -180 })
     .withMessage('Minimum longitude must be a decimal'),
 
   check('maxLng')
     .optional()
-    .isFloat()
+    .isFloat({ max: 180 })
     .withMessage('Maximum longitude must be a decimal'),
 
   check('minPrice')

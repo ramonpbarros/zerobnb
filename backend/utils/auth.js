@@ -111,14 +111,14 @@ const isAuthorized = async function (req, _res, next) {
     const review = await Review.findOne({
       where: [
         {
-          userId: reviewId,
+          id: reviewId,
         },
       ],
     });
 
     let currentReview;
 
-    if (!currentReview) {
+    if (!review) {
       const err = new Error();
       err.message = "Review couldn't be found";
       err.status = 404;
