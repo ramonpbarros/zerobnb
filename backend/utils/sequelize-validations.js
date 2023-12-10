@@ -2,10 +2,13 @@ const { handleValidationErrors } = require('./validation');
 const { check } = require('express-validator');
 
 const validateCreateSpot = [
-  check('address').exists().withMessage('Street address is required'),
-  check('city').exists().withMessage('City is required'),
-  check('state').exists().withMessage('State is required'),
-  check('country').exists().withMessage('Country is required'),
+  check('address')
+    .exists()
+    .notEmpty()
+    .withMessage('Street address is required'),
+  check('city').exists().notEmpty().withMessage('City is required'),
+  check('state').exists().notEmpty().withMessage('State is required'),
+  check('country').exists().notEmpty().withMessage('Country is required'),
   check('lat')
     .exists()
     .withMessage('Latitude is required')
@@ -21,7 +24,10 @@ const validateCreateSpot = [
     .withMessage('Name is required')
     .isLength({ max: 50 })
     .withMessage('Name must be less than 50 characters'),
-  check('description').exists().withMessage('Description is required'),
+  check('description')
+    .exists()
+    .notEmpty()
+    .withMessage('Description is required'),
   check('price')
     .exists()
     .withMessage('Price per day is required')
@@ -34,10 +40,19 @@ const validateEditSpot = [
   check('address')
     .optional()
     .exists()
+    .notEmpty()
     .withMessage('Street address is required'),
-  check('city').optional().exists().withMessage('City is required'),
-  check('state').optional().exists().withMessage('State is required'),
-  check('country').optional().exists().withMessage('Country is required'),
+  check('city').optional().exists().notEmpty().withMessage('City is required'),
+  check('state')
+    .optional()
+    .exists()
+    .notEmpty()
+    .withMessage('State is required'),
+  check('country')
+    .optional()
+    .exists()
+    .notEmpty()
+    .withMessage('Country is required'),
   check('lat')
     .optional()
     .exists()
@@ -59,6 +74,7 @@ const validateEditSpot = [
   check('description')
     .optional()
     .exists()
+    .notEmpty()
     .withMessage('Description is required'),
   check('price')
     .optional()
@@ -69,7 +85,7 @@ const validateEditSpot = [
   handleValidationErrors,
 ];
 
-const validateReview = [
+const validateCreateReview = [
   check('review')
     .exists()
     .withMessage('Review text is required')
@@ -83,16 +99,27 @@ const validateReview = [
   handleValidationErrors,
 ];
 
-const validateBooking = [
-  check('startDate')
+const validateEditReview = [
+  check('review')
+    .optional()
     .exists()
-    .withMessage('startDate cannot be in the past')
-    .custom((value, { req }) => {
-      if (new Date(value) < new Date()) {
-        throw new Error('startDate cannot be in the past');
-      }
-      return true;
-    }),
+    .notEmpty()
+    .withMessage('Review text is required'),
+  check('stars')
+    .optional()
+    .exists()
+    .withMessage('Stars must be an integer from 1 to 5')
+    .isInt({ min: 1, max: 5 })
+    .withMessage('Stars must be an integer from 1 to 5'),
+  handleValidationErrors,
+];
+
+const validateCreateBooking = [
+  check('startDate')
+    // .optional()
+    .exists()
+    .isAfter(new Date().toString())
+    .withMessage('startDate cannot be in the past'),
   check('endDate')
     .exists()
     .withMessage('endDate cannot be on or before startDate')
@@ -107,35 +134,63 @@ const validateBooking = [
   handleValidationErrors,
 ];
 
+const validateEditBooking = [
+  check('startDate')
+    .optional()
+    .exists()
+    .custom((value, { req }) => {
+      if (value && new Date(value) < new Date()) {
+        throw new Error('startDate cannot be in the past');
+      }
+      return true;
+    }),
+
+  check('endDate')
+    .optional()
+    .exists()
+    .custom((value, { req }) => {
+      const startDate = new Date(req.body.startDate);
+      const endDate = new Date(value);
+      if (endDate <= startDate) {
+        throw new Error('endDate cannot be on or before startDate');
+      }
+      return true;
+    }),
+  handleValidationErrors,
+];
+
 const validateGetAllSpots = [
   check('page')
+    .optional({ nullable: true })
     .isInt({ min: 1, max: 10 })
     .withMessage('Page must be an integer between 1 and 10')
     .toInt(),
 
   check('size')
+    .optional({ nullable: true })
     .isInt({ min: 1, max: 20 })
     .withMessage('Size must be an integer between 1 and 20')
     .toInt(),
 
   check('minLat')
     .optional()
-    .isFloat()
+    .isFloat({ min: -90 })
     .withMessage('Minimum latitude must be a decimal'),
 
   check('maxLat')
     .optional()
     .isFloat()
+    .isFloat({ max: 90 })
     .withMessage('Maximum latitude must be a decimal'),
 
   check('minLng')
     .optional()
-    .isFloat()
+    .isFloat({ min: -180 })
     .withMessage('Minimum longitude must be a decimal'),
 
   check('maxLng')
     .optional()
-    .isFloat()
+    .isFloat({ max: 180 })
     .withMessage('Maximum longitude must be a decimal'),
 
   check('minPrice')
@@ -154,7 +209,9 @@ const validateGetAllSpots = [
 module.exports = {
   validateCreateSpot,
   validateEditSpot,
-  validateReview,
-  validateBooking,
+  validateCreateReview,
+  validateEditReview,
+  validateCreateBooking,
+  validateEditBooking,
   validateGetAllSpots,
 };

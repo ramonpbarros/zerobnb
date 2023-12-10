@@ -111,7 +111,7 @@ const isAuthorized = async function (req, _res, next) {
     const review = await Review.findOne({
       where: [
         {
-          userId: reviewId,
+          id: reviewId,
         },
       ],
     });
@@ -127,9 +127,9 @@ const isAuthorized = async function (req, _res, next) {
       currentReview = review.toJSON();
     }
 
-    if (currentUser.id === review.id) {
+    if (currentReview.userId === currentUser.id) {
       return next();
-    } else if (currentReview.ownerId !== currentUser.id) {
+    } else if (currentReview.userId !== currentUser.id) {
       const err = new Error();
       err.message = 'Forbidden';
       err.status = 403;

@@ -5,8 +5,8 @@ const { requireAuth, isAuthorized } = require('../../utils/auth');
 const {
   validateCreateSpot,
   validateEditSpot,
-  validateReview,
-  validateBooking,
+  validateCreateReview,
+  validateCreateBooking,
   validateGetAllSpots,
 } = require('../../utils/sequelize-validations');
 
@@ -32,66 +32,63 @@ router.get('/', validateGetAllSpots, async (req, res) => {
     offset = null;
     page = 1;
   }
+
   const spots = await Spot.findAll({
     include: [{ model: Image }, { model: Review }],
     limit,
     offset,
   });
-  let allSpots = [];
 
-  spots.forEach((spot) => {
-    allSpots.push(spot.toJSON());
-  });
+  const formattedSpots = spots.map((spot) => {
+    const formattedSpot = spot.toJSON();
 
-  allSpots.forEach((spot) => {
-    const reviews = spot.Reviews || [];
+    const newTimeUpdatedAt = new Date(formattedSpot.updatedAt)
+      .toISOString()
+      .split('')
+      .slice(11, 19)
+      .join('');
+
+    const newDateUpdatedAt = new Date(formattedSpot.updatedAt)
+      .toISOString()
+      .split('T')[0];
+
+    const newTimeCreatedAt = new Date(formattedSpot.createdAt)
+      .toISOString()
+      .split('')
+      .slice(11, 19)
+      .join('');
+
+    const newDateCreatedAt = new Date(formattedSpot.createdAt)
+      .toISOString()
+      .split('T')[0];
+
+    delete formattedSpot.createdAt;
+    delete formattedSpot.updatedAt;
+
+    formattedSpot.createdAt = `${newDateCreatedAt} ${newTimeCreatedAt}`;
+    formattedSpot.updatedAt = `${newDateUpdatedAt} ${newTimeUpdatedAt}`;
+
+    const reviews = formattedSpot.Reviews || [];
     const totalStars = reviews.reduce((sum, review) => sum + review.stars, 0);
     const avgRating = reviews.length > 0 ? totalStars / reviews.length : 0;
 
-    const newTimeUpdatedAt = new Date(spot.updatedAt)
-      .toISOString()
-      .split('')
-      .slice(11, 19)
-      .join('');
+    formattedSpot.avgRating = avgRating;
 
-    const newDateUpdatedAt = new Date(spot.updatedAt)
-      .toISOString()
-      .split('T')[0];
-
-    const newTimeCreatedAt = new Date(spot.createdAt)
-      .toISOString()
-      .split('')
-      .slice(11, 19)
-      .join('');
-
-    const newDateCreatedAt = new Date(spot.createdAt)
-      .toISOString()
-      .split('T')[0];
-
-    spot.Reviews.forEach((review) => {
-      if (review.stars) {
-        spot.avgRating = avgRating;
-      }
-    });
-
-    spot.Images.forEach((image) => {
-      if (image.url) {
-        spot.previewImage = image.url;
-      }
-    });
-
-    spot.createdAt = `${newDateCreatedAt} ${newTimeCreatedAt}`;
-    spot.updatedAt = `${newDateUpdatedAt} ${newTimeUpdatedAt}`;
-
-    if (!spot.previewImage) {
-      spot.previewImage = 'No preview image found';
+    if (formattedSpot.Images && formattedSpot.Images.length > 0) {
+      formattedSpot.previewImage = formattedSpot.Images[0].url;
+      delete formattedSpot.Images;
+    } else {
+      formattedSpot.previewImage = 'No preview image found';
     }
 
-    delete spot.Images;
-    delete spot.Reviews;
+    delete formattedSpot.Reviews;
+
+    return formattedSpot;
   });
 
-  res.json({ Spots: allSpots, page, size });
+  res.json({ Spots: formattedSpots, page, size });
+
+  // res.json({ Spots: spots, page, size });
 });
 
 // Get all spots owned by the current user
@@ -104,7 +101,54 @@ router.get('/current', requireAuth, async (req, res) => {
     },
   });
 
-  res.json({ Spots: spots });
+  const formattedSpots = spots.map((spot) => {
+    const formattedSpot = spot.toJSON();
+
+    const newTimeUpdatedAt = new Date(formattedSpot.updatedAt)
+      .toISOString()
+      .split('')
+      .slice(11, 19)
+      .join('');
+
+    const newDateUpdatedAt = new Date(formattedSpot.updatedAt)
+      .toISOString()
+      .split('T')[0];
+
+    const newTimeCreatedAt = new Date(formattedSpot.createdAt)
+      .toISOString()
+      .split('')
+      .slice(11, 19)
+      .join('');
+
+    const newDateCreatedAt = new Date(formattedSpot.createdAt)
+      .toISOString()
+      .split('T')[0];
+
+    delete formattedSpot.createdAt;
+    delete formattedSpot.updatedAt;
+
+    formattedSpot.createdAt = `${newDateCreatedAt} ${newTimeCreatedAt}`;
+    formattedSpot.updatedAt = `${newDateUpdatedAt} ${newTimeUpdatedAt}`;
+
+    const reviews = formattedSpot.Reviews || [];
+    const totalStars = reviews.reduce((sum, review) => sum + review.stars, 0);
+    const avgRating = reviews.length > 0 ? totalStars / reviews.length : 0;
+
+    formattedSpot.avgRating = avgRating;
+
+    if (formattedSpot.Images && formattedSpot.Images.length > 0) {
+      formattedSpot.previewImage = formattedSpot.Images[0].url;
+      delete formattedSpot.Images;
+    } else {
+      formattedSpot.previewImage = 'No preview image found';
+    }
+
+    delete formattedSpot.Reviews;
+
+    return formattedSpot;
+  });
+
+  res.json({ Spots: formattedSpots });
 });
 
 // Get details of a Spot from an id
@@ -118,40 +162,68 @@ router.get('/:spotId', async (req, res) => {
     res.send({ message: "Spot couldn't be found" });
   }
 
-  let spotDetail = spot.toJSON();
+  const user = await User.findByPk(spot.ownerId, {
+    attributes: { exclude: ['username'] },
+  });
 
-  const reviews = spotDetail.Reviews || [];
+  const formattedUser = user.toJSON();
+
+  const formattedSpot = spot.toJSON();
+
+  const newTimeUpdatedAt = new Date(formattedSpot.updatedAt)
+    .toISOString()
+    .split('')
+    .slice(11, 19)
+    .join('');
+
+  const newDateUpdatedAt = new Date(formattedSpot.updatedAt)
+    .toISOString()
+    .split('T')[0];
+
+  const newTimeCreatedAt = new Date(formattedSpot.createdAt)
+    .toISOString()
+    .split('')
+    .slice(11, 19)
+    .join('');
+
+  const newDateCreatedAt = new Date(formattedSpot.createdAt)
+    .toISOString()
+    .split('T')[0];
+
+  delete formattedSpot.createdAt;
+  delete formattedSpot.updatedAt;
+
+  formattedSpot.createdAt = `${newDateCreatedAt} ${newTimeCreatedAt}`;
+  formattedSpot.updatedAt = `${newDateUpdatedAt} ${newTimeUpdatedAt}`;
+
+  formattedSpot.numReviews = spot.Reviews.length;
+
+  const reviews = formattedSpot.Reviews || [];
   const totalStars = reviews.reduce((sum, review) => sum + review.stars, 0);
   const avgRating = reviews.length > 0 ? totalStars / reviews.length : 0;
 
-  if (spotDetail.Reviews[0].stars) {
-    spotDetail.numReviews = spotDetail.Reviews.length;
-    spotDetail.avgStarRating = avgRating;
-    delete spotDetail.Reviews;
-  }
+  formattedSpot.avgStarRating = avgRating;
 
-  if (spotDetail.Images && spotDetail.Users.length > 0) {
-    spotDetail.SpotImages = spotDetail.Images.map((image) => ({
+  if (formattedSpot.Images) {
+    formattedSpot.Images = formattedSpot.Images.map((image) => ({
       id: image.id,
       url: image.url,
       preview: image.preview,
     }));
-    delete spotDetail.Images;
+    formattedSpot.SpotImages = formattedSpot.Images;
   }
 
-  if (spotDetail.Users && spotDetail.Users.length > 0) {
-    const owner = spotDetail.Users[0];
+  delete formattedSpot.Images;
 
-    spotDetail.Owner = {
-      id: owner.id,
-      firstName: owner.firstName,
-      lastName: owner.lastName,
-    };
-
-    delete spotDetail.Users;
+  if (formattedSpot.Users) {
+    (formattedSpot.id = formattedUser.id),
+      (formattedSpot.Owner = formattedUser);
   }
 
-  res.json(spotDetail);
+  delete formattedSpot.Users;
+  delete formattedSpot.Reviews;
+
+  res.json(formattedSpot);
 });
 
 // Create a Spot
@@ -174,7 +246,32 @@ router.post('/', requireAuth, validateCreateSpot, async (req, res) => {
     price,
   });
 
-  res.status(201).json(newSpot);
+  let currentNewSpot = newSpot.toJSON();
+
+  const newTimeUpdatedAt = new Date(currentNewSpot.updatedAt)
+    .toISOString()
+    .split('')
+    .slice(11, 19)
+    .join('');
+
+  const newDateUpdatedAt = new Date(currentNewSpot.updatedAt)
+    .toISOString()
+    .split('T')[0];
+
+  const newTimeCreatedAt = new Date(currentNewSpot.createdAt)
+    .toISOString()
+    .split('')
+    .slice(11, 19)
+    .join('');
+
+  const newDateCreatedAt = new Date(currentNewSpot.createdAt)
+    .toISOString()
+    .split('T')[0];
+
+  currentNewSpot.createdAt = `${newDateCreatedAt} ${newTimeCreatedAt}`;
+  currentNewSpot.updatedAt = `${newDateUpdatedAt} ${newTimeUpdatedAt}`;
+
+  res.status(201).json(currentNewSpot);
 });
 
 // Add an Image to a Spot based on the Spot's id
@@ -204,13 +301,36 @@ router.put(
   isAuthorized,
   validateEditSpot,
   async (req, res) => {
-    const spotId = req.params.spotId;
+    const spot = await Spot.findByPk(req.params.spotId);
 
-    const spot = await Spot.findByPk(spotId);
+    const spotUpdated = await spot.update(req.body);
 
-    await spot.update(req.body);
+    let currentSpot = spotUpdated.toJSON();
 
-    res.json(spot);
+    const newTimeUpdatedAt = new Date(currentSpot.updatedAt)
+      .toISOString()
+      .split('')
+      .slice(11, 19)
+      .join('');
+
+    const newDateUpdatedAt = new Date(currentSpot.updatedAt)
+      .toISOString()
+      .split('T')[0];
+
+    const newTimeCreatedAt = new Date(currentSpot.createdAt)
+      .toISOString()
+      .split('')
+      .slice(11, 19)
+      .join('');
+
+    const newDateCreatedAt = new Date(currentSpot.createdAt)
+      .toISOString()
+      .split('T')[0];
+
+    currentSpot.createdAt = `${newDateCreatedAt} ${newTimeCreatedAt}`;
+    currentSpot.updatedAt = `${newDateUpdatedAt} ${newTimeUpdatedAt}`;
+
+    res.json(currentSpot);
   }
 );
 
@@ -262,8 +382,9 @@ router.get('/:spotId/reviews', async (req, res) => {
 router.post(
   '/:spotId/reviews',
   requireAuth,
-  validateReview,
+  validateCreateReview,
   async (req, res) => {
+    const currentUser = req.user.toJSON();
     const spot = await Spot.findByPk(req.params.spotId);
 
     if (!spot) {
@@ -272,9 +393,14 @@ router.post(
       });
     }
 
-    const reviews = await spot.getReviews({});
+    let currentReview;
 
-    if (reviews.length) {
+    const reviews = await spot.getReviews({});
+    reviews.map((review) => {
+      currentReview = review.toJSON();
+    });
+
+    if (reviews.length > 0 && currentReview.userId === currentUser.id) {
       return res.status(500).json({
         message: 'User already has a review for this spot',
       });
@@ -284,8 +410,6 @@ router.post(
 
     const { review, stars } = req.body;
 
-    const currentUser = req.user.toJSON();
-
     const newReview = await Review.create({
       userId: currentUser.id,
       spotId: currentSpot.id,
@@ -293,7 +417,32 @@ router.post(
       stars,
     });
 
-    res.status(201).json(newReview);
+    let currentNewReview = newReview.toJSON();
+
+    const newTimeUpdatedAt = new Date(currentNewReview.updatedAt)
+      .toISOString()
+      .split('')
+      .slice(11, 19)
+      .join('');
+
+    const newDateUpdatedAt = new Date(currentNewReview.updatedAt)
+      .toISOString()
+      .split('T')[0];
+
+    const newTimeCreatedAt = new Date(currentNewReview.createdAt)
+      .toISOString()
+      .split('')
+      .slice(11, 19)
+      .join('');
+
+    const newDateCreatedAt = new Date(currentNewReview.createdAt)
+      .toISOString()
+      .split('T')[0];
+
+    currentNewReview.createdAt = `${newDateCreatedAt} ${newTimeCreatedAt}`;
+    currentNewReview.updatedAt = `${newDateUpdatedAt} ${newTimeUpdatedAt}`;
+
+    res.status(201).json(currentNewReview);
   }
 );
 
@@ -375,14 +524,16 @@ router.get('/:spotId/bookings', requireAuth, async (req, res) => {
 router.post(
   '/:spotId/bookings',
   requireAuth,
-  validateBooking,
+  validateCreateBooking,
   async (req, res) => {
     const currentUser = req.user.toJSON();
-
     const spot = await Spot.findByPk(req.params.spotId);
 
-    if (!spot)
-      return res.status(404).json({ message: "Spot couldn't be found" });
+    if (!spot) {
+      return res.status(404).json({
+        message: "Spot couldn't be found",
+      });
+    }
 
     let currentSpot = spot.toJSON();
 
@@ -477,6 +628,10 @@ router.post(
       });
 
       res.status(200).json(formattedBookings);
+    } else {
+      return res.status(403).json({
+        message: 'Forbbiden',
+      });
     }
   }
 );

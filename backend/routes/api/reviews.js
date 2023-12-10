@@ -1,7 +1,7 @@
 const express = require('express');
 const { Review, Spot, User, Image } = require('../../db/models');
 const { requireAuth, isAuthorized } = require('../../utils/auth');
-const { validateReview } = require('../../utils/sequelize-validations');
+const { validateEditReview } = require('../../utils/sequelize-validations');
 
 const router = express.Router();
 
@@ -19,6 +19,29 @@ router.get('/current', requireAuth, async (req, res) => {
   const allReviews = await Promise.all(
     reviews.map(async (review) => {
       const reviewJson = review.toJSON();
+
+      const newTimeUpdatedAt = new Date(review.updatedAt)
+        .toISOString()
+        .split('')
+        .slice(11, 19)
+        .join('');
+
+      const newDateUpdatedAt = new Date(review.updatedAt)
+        .toISOString()
+        .split('T')[0];
+
+      const newTimeCreatedAt = new Date(review.createdAt)
+        .toISOString()
+        .split('')
+        .slice(11, 19)
+        .join('');
+
+      const newDateCreatedAt = new Date(review.createdAt)
+        .toISOString()
+        .split('T')[0];
+
+      reviewJson.createdAt = `${newDateCreatedAt} ${newTimeCreatedAt}`;
+      reviewJson.updatedAt = `${newDateUpdatedAt} ${newTimeUpdatedAt}`;
 
       if (reviewJson.User) {
         const { username, ...userWithoutUsername } = reviewJson.User;
@@ -43,8 +66,15 @@ router.get('/current', requireAuth, async (req, res) => {
         reviewJson.Spot = spotWithoutUnnecessary;
       }
 
-      if (reviewJson.Images && reviewJson.Images.length > 0) {
-        const imagesWithIdAndUrl = reviewJson.Images.map((image) => ({
+      if (reviewJson.Images) {
+        const images = await Image.findAll({
+          where: {
+            imageableType: 'Review',
+            imageableId: reviewJson.Spot.id,
+          },
+        });
+
+        const imagesWithIdAndUrl = images.map((image) => ({
           id: image.id,
           url: image.url,
         }));
@@ -65,15 +95,31 @@ router.get('/current', requireAuth, async (req, res) => {
 router.post(
   '/:reviewId/images',
   requireAuth,
-  isAuthorized,
+  // isAuthorized,
   async (req, res) => {
     const { url } = req.body;
+    const currentUser = req.user.toJSON();
 
     const review = await Review.findByPk(req.params.reviewId);
 
-    const images = await review.getImages({});
+    let currentReview = review.toJSON();
 
-    if (images.length < 11) {
+    if (!review) {
+      return res.status(404).json({
+        message: "Review couldn't be found",
+      });
+    }
+
+    if (currentReview.userId !== currentUser.id) {
+      return res.status(403).json({
+        message: 'Forbidden',
+      });
+    }
+
+    const images = await review.getImages({});
+    console.log(images.length);
+
+    if (images.length  < 10) {
       const newImage = await Image.create({
         imageableId: review.id,
         imageableType: 'Review',
@@ -97,14 +143,55 @@ router.post(
 router.put(
   '/:reviewId',
   requireAuth,
-  isAuthorized,
-  validateReview,
+  // isAuthorized,
+  validateEditReview,
   async (req, res) => {
+    const currentUser = req.user.toJSON();
+
     const review = await Review.findByPk(req.params.reviewId);
 
-    await review.update(req.body);
+    let currentReview = review.toJSON();
 
-    res.json(review);
+    if (!review) {
+      return res.status(404).json({
+        message: "Review couldn't be found",
+      });
+    }
+
+    if (currentReview.userId !== currentUser.id) {
+      return res.status(403).json({
+        message: 'Forbidden',
+      });
+    }
+
+    const reviewUpdated = await review.update(req.body);
+
+    currentReview = reviewUpdated.toJSON();
+
+    const newTimeUpdatedAt = new Date(currentReview.updatedAt)
+      .toISOString()
+      .split('')
+      .slice(11, 19)
+      .join('');
+
+    const newDateUpdatedAt = new Date(currentReview.updatedAt)
+      .toISOString()
+      .split('T')[0];
+
+    const newTimeCreatedAt = new Date(currentReview.createdAt)
+      .toISOString()
+      .split('')
+      .slice(11, 19)
+      .join('');
+
+    const newDateCreatedAt = new Date(currentReview.createdAt)
+      .toISOString()
+      .split('T')[0];
+
+    currentReview.createdAt = `${newDateCreatedAt} ${newTimeCreatedAt}`;
+    currentReview.updatedAt = `${newDateUpdatedAt} ${newTimeUpdatedAt}`;
+
+    res.json(currentReview);
   }
 );
 
