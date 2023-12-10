@@ -87,8 +87,6 @@ router.get('/', validateGetAllSpots, async (req, res) => {
   });
 
   res.json({ Spots: formattedSpots, page, size });
-
-  // res.json({ Spots: spots, page, size });
 });
 
 // Get all spots owned by the current user
