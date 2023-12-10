@@ -106,7 +106,7 @@ router.put(
     const existingBookings = await Booking.findAll({
       where: {
         [Op.and]: [
-          { id: { [Op.ne]: req.params.bookingId } }, // Exclude the current booking from conflict check
+          { id: { [Op.ne]: req.params.bookingId } },
           {
             [Op.or]: [
               { startDate: { [Op.between]: [startDate, endDate] } },
@@ -122,11 +122,27 @@ router.put(
     });
 
     if (existingBookings.length > 0) {
+
       const conflicts = {};
+
       existingBookings.forEach((existingBooking) => {
         if (
-          (startDate >= existingBooking.startDate && startDate <= existingBooking.endDate) ||
-          (endDate >= existingBooking.startDate && endDate <= existingBooking.endDate)
+          startDate >= existingBooking.startDate &&
+          startDate <= existingBooking.endDate
+        ) {
+          conflicts.startDate = 'Start date conflicts with an existing booking';
+        }
+
+        if (
+          endDate >= existingBooking.startDate &&
+          endDate <= existingBooking.endDate
+        ) {
+          conflicts.endDate = 'End date conflicts with an existing booking';
+        }
+
+        if (
+          startDate <= existingBooking.startDate &&
+          endDate >= existingBooking.endDate
         ) {
           conflicts.startDate = 'Start date conflicts with an existing booking';
           conflicts.endDate = 'End date conflicts with an existing booking';
@@ -144,25 +160,24 @@ router.put(
     const updatedBooking = await Booking.findByPk(req.params.bookingId);
 
     const newTimeUpdatedAt = new Date(updatedBooking.updatedAt)
-        .toISOString()
-        .split('')
-        .slice(11, 19)
-        .join('');
+      .toISOString()
+      .split('')
+      .slice(11, 19)
+      .join('');
 
-      const newDateUpdatedAt = new Date(updatedBooking.updatedAt)
-        .toISOString()
-        .split('T')[0];
+    const newDateUpdatedAt = new Date(updatedBooking.updatedAt)
+      .toISOString()
+      .split('T')[0];
 
-      const newTimeCreatedAt = new Date(updatedBooking.createdAt)
-        .toISOString()
-        .split('')
-        .slice(11, 19)
-        .join('');
+    const newTimeCreatedAt = new Date(updatedBooking.createdAt)
+      .toISOString()
+      .split('')
+      .slice(11, 19)
+      .join('');
 
-      const newDateCreatedAt = new Date(updatedBooking.createdAt)
-        .toISOString()
-        .split('T')[0];
-
+    const newDateCreatedAt = new Date(updatedBooking.createdAt)
+      .toISOString()
+      .split('T')[0];
 
     const formattedBookings = {
       id: updatedBooking.id,
