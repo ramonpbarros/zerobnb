@@ -229,6 +229,10 @@ router.post('/', requireAuth, validateCreateSpot, async (req, res) => {
   const { address, city, state, country, lat, lng, name, description, price } =
     req.body;
 
+  const latitude = Number(lat);
+  const longitude = Number(lng);
+  const newPrice = Number(price);
+
   const currentUser = req.user.toJSON();
 
   const newSpot = await Spot.create({
@@ -237,11 +241,11 @@ router.post('/', requireAuth, validateCreateSpot, async (req, res) => {
     city,
     state,
     country,
-    lat,
-    lng,
+    latitude,
+    longitude,
     name,
     description,
-    price,
+    newPrice,
   });
 
   let currentNewSpot = newSpot.toJSON();
