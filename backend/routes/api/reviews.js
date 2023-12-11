@@ -97,12 +97,11 @@ router.post(
   requireAuth,
   // isAuthorized,
   async (req, res) => {
-    const { url } = req.body;
-    const currentUser = req.user.toJSON();
-
     const review = await Review.findByPk(req.params.reviewId);
 
-    let currentReview = review.toJSON();
+    const { url } = req.body;
+
+    const currentUser = req.user.toJSON();
 
     if (!review) {
       return res.status(404).json({
@@ -110,7 +109,7 @@ router.post(
       });
     }
 
-    if (currentReview.userId !== currentUser.id) {
+    if (review.userId !== currentUser.id) {
       return res.status(403).json({
         message: 'Forbidden',
       });
