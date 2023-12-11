@@ -78,28 +78,18 @@ const isAuthorized = async function (req, _res, next) {
   const bookingId = req.params.bookingId;
 
   if (spotId) {
-    const spot = await Spot.findOne({
-      where: [
-        {
-          ownerId: spotId,
-        },
-      ],
-    });
-
-    let currentSpot;
+    const spot = await Spot.findByPk(spotId)
 
     if (!spot) {
       const err = new Error();
       err.message = "Spot couldn't be found";
       err.status = 404;
       return next(err);
-    } else {
-      currentSpot = spot.toJSON();
     }
 
     if (currentUser.id === spot.id) {
       return next();
-    } else if (currentSpot.ownerId !== currentUser.id) {
+    } else if (spot.ownerId !== currentUser.id) {
       const err = new Error();
       err.message = 'Forbidden';
       err.status = 403;
@@ -107,29 +97,19 @@ const isAuthorized = async function (req, _res, next) {
     }
   }
 
-  if (reviewId && reviewId != null) {
-    const review = await Review.findOne({
-      where: [
-        {
-          id: reviewId,
-        },
-      ],
-    });
-
-    let currentReview;
+  if (reviewId) {
+    const review = await Review.findByPk(reviewId)
 
     if (!review) {
       const err = new Error();
       err.message = "Review couldn't be found";
       err.status = 404;
       return next(err);
-    } else {
-      currentReview = review.toJSON();
     }
 
-    if (currentReview.userId === currentUser.id) {
+    if (review.userId === currentUser.id) {
       return next();
-    } else if (currentReview.userId !== currentUser.id) {
+    } else if (review.userId !== currentUser.id) {
       const err = new Error();
       err.message = 'Forbidden';
       err.status = 403;
@@ -138,28 +118,18 @@ const isAuthorized = async function (req, _res, next) {
   }
 
   if (bookingId) {
-    const booking = await Booking.findOne({
-      where: [
-        {
-          id: bookingId,
-        },
-      ],
-    });
-
-    let currentBooking;
+    const booking = await Booking.findByPk(bookingId)
 
     if (!booking) {
       const err = new Error();
       err.message = "Booking couldn't be found";
       err.status = 404;
       return next(err);
-    } else {
-      currentBooking = booking.toJSON();
     }
 
     if (currentUser.id === booking.userId) {
       return next();
-    } else if (currentBooking.userId !== currentUser.id) {
+    } else if (booking.userId !== currentUser.id) {
       const err = new Error();
       err.message = 'Forbidden';
       err.status = 403;

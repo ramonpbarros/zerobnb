@@ -88,10 +88,6 @@ router.put(
   isAuthorized,
   validateEditBooking,
   async (req, res) => {
-    if (!req.params.bookingId) {
-      return res.status(400).json({ message: 'Booking ID is missing' });
-    }
-
     const booking = await Booking.findByPk(req.params.bookingId);
 
     if (new Date(booking.endDate) < new Date()) {
@@ -198,7 +194,6 @@ router.delete('/:bookingId', requireAuth, isAuthorized, async (req, res) => {
   const booking = await Booking.findByPk(req.params.bookingId);
 
   let currentBooking = booking.toJSON();
-  console.log(currentBooking);
 
   if (new Date(currentBooking.startDate) <= new Date()) {
     return res.status(403).json({
