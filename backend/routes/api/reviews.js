@@ -149,15 +149,13 @@ router.put(
 
     const review = await Review.findByPk(req.params.reviewId);
 
-    let currentReview = review.toJSON();
-
     if (!review) {
       return res.status(404).json({
         message: "Review couldn't be found",
       });
     }
 
-    if (currentReview.userId !== currentUser.id) {
+    if (review.userId !== currentUser.id) {
       return res.status(403).json({
         message: 'Forbidden',
       });
@@ -165,7 +163,7 @@ router.put(
 
     const reviewUpdated = await review.update(req.body);
 
-    currentReview = reviewUpdated.toJSON();
+    let currentReview = reviewUpdated.toJSON();
 
     const newTimeUpdatedAt = new Date(currentReview.updatedAt)
       .toISOString()
