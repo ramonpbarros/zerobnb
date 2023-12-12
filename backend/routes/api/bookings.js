@@ -118,37 +118,40 @@ router.put(
     });
 
     if (existingBookings.length > 0) {
+      const conflictingStartDate = existingBookings.some(
+        (booking) =>
+          startDate >= booking.startDate && startDate <= booking.endDate
+      );
+      const conflictingEndDate = existingBookings.some(
+        (booking) => endDate >= booking.startDate && endDate <= booking.endDate
+      );
 
-      const conflicts = {};
+      const conflictingStartEndDate = existingBookings.some(
+        (booking) =>
+          startDate <= booking.startDate && endDate >= booking.endDate
+      );
 
-      existingBookings.forEach((existingBooking) => {
-        if (
-          startDate >= existingBooking.startDate &&
-          startDate <= existingBooking.endDate
-        ) {
-          conflicts.startDate = 'Start date conflicts with an existing booking';
-        }
+      const errors = {};
 
-        if (
-          endDate >= existingBooking.startDate &&
-          endDate <= existingBooking.endDate
-        ) {
-          conflicts.endDate = 'End date conflicts with an existing booking';
-        }
+      if (conflictingEndDate) {
+        errors.endDate = 'End date conflicts with an existing booking';
+      }
 
-        if (
-          startDate <= existingBooking.startDate &&
-          endDate >= existingBooking.endDate
-        ) {
-          conflicts.startDate = 'Start date conflicts with an existing booking';
-          conflicts.endDate = 'End date conflicts with an existing booking';
-        }
-      });
+      if (conflictingStartDate) {
+        errors.startDate = 'Start date conflicts with an existing booking';
+      }
 
-      return res.status(403).json({
-        message: 'Sorry, this spot is already booked for the specified dates',
-        errors: conflicts,
-      });
+      if (conflictingStartEndDate) {
+        errors.startDate = 'Start date conflicts with an existing booking';
+        errors.endDate = 'End date conflicts with an existing booking';
+      }
+
+      if (Object.keys(errors).length > 0) {
+        return res.status(403).json({
+          message: 'Sorry, this spot is already booked for the specified dates',
+          errors,
+        });
+      }
     } else {
       await booking.update(req.body);
     }
