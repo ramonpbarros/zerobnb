@@ -636,7 +636,7 @@ router.post(
         });
       });
 
-      res.status(200).json(formattedBookings);
+      res.status(200).json(formattedBookings[0]);
     } else {
       return res.status(403).json({
         message: 'Forbbiden',
