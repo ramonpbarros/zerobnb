@@ -627,6 +627,7 @@ router.post(
           .split('T')[0];
 
         formattedBookings.push({
+          id: booking.id,
           userId: booking.userId,
           spotId: booking.spotId,
           startDate: new Date(booking.startDate).toISOString().split('T')[0],
