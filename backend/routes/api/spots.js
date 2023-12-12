@@ -274,9 +274,9 @@ router.post('/', requireAuth, validateCreateSpot, async (req, res) => {
 
 // Add an Image to a Spot based on the Spot's id
 router.post('/:spotId/images', requireAuth, isAuthorized, async (req, res) => {
-  const { url, preview } = req.body;
-
   const spot = await Spot.findByPk(req.params.spotId);
+
+  const { url, preview } = req.body;
 
   const newImage = await Image.create({
     imageableId: spot.id,

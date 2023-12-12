@@ -87,7 +87,7 @@ const isAuthorized = async function (req, _res, next) {
       return next(err);
     }
 
-    if (currentUser.id === spot.id) {
+    if (currentUser.id === spot.ownerId) {
       return next();
     } else if (spot.ownerId !== currentUser.id) {
       const err = new Error();
