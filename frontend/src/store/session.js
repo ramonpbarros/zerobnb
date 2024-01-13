@@ -1,30 +1,15 @@
 import { csrfFetch } from './csrf';
 
-const LOGIN_USER = 'session/LOGIN_USER';
-const LOGOUT_USER = 'session/LOGOUT_USER';
+const SET_USER = 'session/SET_USER';
+const REMOVE_USER = 'session/REMOVE_USER';
 
-const initialState = {
-  user: null,
-};
-
-export default function sessionReducer(state = initialState, action) {
-  switch (action.type) {
-    case LOGIN_USER:
-      return { ...state, user: action.payload };
-    case LOGOUT_USER:
-      return { ...state, user: null };
-    default:
-      return state;
-  }
-}
-
-export const loginUser = (user) => ({
-  type: LOGIN_USER,
+const setUser = (user) => ({
+  type: SET_USER,
   payload: user,
 });
 
-export const logoutUser = () => ({
-  type: LOGOUT_USER,
+const removeUser = () => ({
+  type: REMOVE_USER,
 });
 
 export const login =
@@ -37,6 +22,21 @@ export const login =
 
     if (response.ok) {
       const user = await response.json();
-      dispatch(loginUser(user));
+      dispatch(setUser(user));
     }
   };
+
+const initialState = {
+  user: null,
+};
+
+export default function sessionReducer(state = initialState, action) {
+  switch (action.type) {
+    case SET_USER:
+      return { ...state, user: action.payload };
+    case REMOVE_USER:
+      return { ...state, user: null };
+    default:
+      return state;
+  }
+}
