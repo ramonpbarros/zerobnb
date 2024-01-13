@@ -1,78 +1,55 @@
-import './LoginForm.css';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
+import * as sessionActions from '../../store/session';
 import { useDispatch, useSelector } from 'react-redux';
-import { login } from '../../store/session';
-import { useNavigate } from 'react-router-dom';
+import { Navigate } from 'react-router-dom';
 
-const LoginFormPage = () => {
-  const [credential, setCredential] = useState('');
-  const [password, setPassword] = useState('');
-  const [errors, setErrors] = useState([]);
-
+function LoginFormPage() {
   const dispatch = useDispatch();
-  const navigate = useNavigate();
   const sessionUser = useSelector((state) => state.session.user);
+  const [credential, setCredential] = useState("");
+  const [password, setPassword] = useState("");
+  const [errors, setErrors] = useState({});
 
-  useEffect(() => {
-    if (sessionUser) {
-      navigate('/');
-    }
-  }, [sessionUser, navigate]);
+  if (sessionUser) return <Navigate to="/" replace={true} />;
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = (e) => {
     e.preventDefault();
-
-    try {
-      const user = await dispatch(login({ credential, password }));
-
-      if (user) {
-        navigate('/');
+    setErrors({});
+    return dispatch(sessionActions.login({ credential, password })).catch(
+      async (res) => {
+        const data = await res.json();
+        if (data?.errors) setErrors(data.errors);
       }
-    } catch (error) {
-      if (error.status === 401) {
-        setErrors(['Invalid credentials. Please try again.']);
-      } else {
-        console.error('Login error:', error);
-        setErrors(['An error occurred. Please try again.']);
-      }
-    }
+    );
   };
 
   return (
-    <div>
-      <h2>Login Form Page</h2>
-
+    <>
+      <h1>Log In</h1>
       <form onSubmit={handleSubmit}>
         <label>
-          Credential (Username or Email):
+          Username or Email
           <input
             type="text"
             value={credential}
             onChange={(e) => setCredential(e.target.value)}
+            required
           />
         </label>
-
         <label>
-          Password:
+          Password
           <input
             type="password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
+            required
           />
         </label>
-
-        {errors.length > 0 && (
-          <div>
-            {errors.map((error, index) => (
-              <p key={index}>{error}</p>
-            ))}
-          </div>
-        )}
-
-        <button type="submit">Login</button>
+        {errors.credential && <p>{errors.credential}</p>}
+        <button type="submit">Log In</button>
       </form>
-    </div>
+    </>
   );
-};
+}
 
 export default LoginFormPage;
