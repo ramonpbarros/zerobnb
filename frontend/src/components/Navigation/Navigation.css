@@ -1,0 +1,36 @@
+ul {
+  list-style: none;
+  display: flex;
+  justify-content: space-between;
+  padding: 10px; /* Adjust the padding to control the height */
+  margin: 0;
+  background-color: transparent;
+}
+
+li {
+  margin-right: 15px;
+}
+
+a {
+  text-decoration: none;
+  color: #333;
+  font-weight: bold;
+  font-size: 16px;
+}
+
+a:hover {
+  color: #DC0F63;
+}
+
+.profile-dropdown {
+  display: block;
+  position: absolute;
+  transform: translateX(-50%);
+  background-color: white;
+  box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+  padding: 10px;
+}
+
+.profile-dropdown.hidden {
+  display: none;
+}
