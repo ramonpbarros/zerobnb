@@ -2,9 +2,10 @@ ul {
   list-style: none;
   display: flex;
   justify-content: space-between;
-  padding: 10px; /* Adjust the padding to control the height */
+  padding: 10px;
   margin: 0;
   background-color: transparent;
+  border-bottom: 0.5px solid #ebebeb;
 }
 
 li {
@@ -13,13 +14,13 @@ li {
 
 a {
   text-decoration: none;
-  color: #333;
+  color: #ff385c;
   font-weight: bold;
   font-size: 16px;
 }
 
 a:hover {
-  color: #DC0F63;
+  color: #dc0f63;
 }
 
 .profile-dropdown {
@@ -33,4 +34,47 @@ a:hover {
 
 .profile-dropdown.hidden {
   display: none;
+}
+
+.custom-button {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background-color: white; /* Set your desired background color */
+  color: black; /* Set your desired text color */
+  border: solid #ebebeb;
+  padding: 10px 15px;
+  border-radius: 25px; /* Adjust border-radius for the pill shape */
+  cursor: pointer;
+}
+
+.custom-button i {
+  font-size: 18px;
+}
+
+/* Add this if you want the hamburger icon on the left */
+.custom-button i:first-child {
+  margin-right: 10px; /* Adjust the spacing between the icons */
+}
+
+.custom-button:hover {
+  box-shadow: 0 2px 2px rgba(0, 0, 0, 0.5); /* Add a box shadow on hover */
+  color: black;
+  background-color: white;
+}
+
+.nav-btn {
+  border: none; /* Remove button border */
+  background-color: transparent; /* Set your desired button background color */
+  color: inherit; /* Inherit text color from parent */
+  cursor: pointer;
+  transition: background-color 0.3s ease; /* Add transition for a smoother effect */
+  width: 100%;
+  /* padding: 1px 50px; */
+  white-space: nowrap;
+}
+
+.nav-btn:hover {
+  background-color: lightgray; /* Set your desired background color on hover */
+  color: black;
 }
