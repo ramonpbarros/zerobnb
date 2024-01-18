@@ -82,3 +82,7 @@ a:hover {
   background-color: lightgray; /* Set your desired background color on hover */
   color: black;
 }
+
+.logo{
+  width: 40%;
+}

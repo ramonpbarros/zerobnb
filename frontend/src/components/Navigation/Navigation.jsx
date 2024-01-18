@@ -10,7 +10,13 @@ function Navigation({ isLoaded }) {
     <>
       <ul>
         <li>
-          <NavLink to="/">zerobnb</NavLink>
+          <NavLink to="/">
+            <img
+              src="../../../public/assets/imgs/zero.png"
+              className={'logo'}
+              alt="logo"
+            />
+          </NavLink>
         </li>
         {isLoaded && (
           <li>
