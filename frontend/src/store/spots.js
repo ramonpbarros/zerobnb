@@ -1,20 +1,18 @@
 import { csrfFetch } from './csrf';
 
-// Action Types
 const LOAD_SPOTS = 'spots/LOAD_SPOTS';
+const LOAD_SPOT = 'spots/LOAD_SPOT';
 
-// Action Creators
 const loadSpots = (spotList) => ({
   type: LOAD_SPOTS,
   payload: spotList,
 });
 
-const loadSpot = (spotList) => ({
-  type: LOAD_SPOTS,
-  payload: spotList,
+const loadSpot = (spot) => ({
+  type: LOAD_SPOT,
+  payload: spot,
 });
 
-// Thunk Action to Get All Spots
 export const getAllSpots = () => async (dispatch) => {
   const response = await csrfFetch('/api/spots');
   if (response.ok) {
@@ -24,7 +22,6 @@ export const getAllSpots = () => async (dispatch) => {
   }
 };
 
-// Thunk Action to Get Spot by ID
 export const getSpotById = (spotId) => async (dispatch) => {
   const response = await csrfFetch(`/api/spots/${spotId}`);
 
@@ -37,9 +34,9 @@ export const getSpotById = (spotId) => async (dispatch) => {
 
 const initialState = {
   spotList: [],
+  spotDetails: {},
 };
 
-// Reducer
 const spotReducer = (state = initialState, action) => {
   switch (action.type) {
     case LOAD_SPOTS:
@@ -47,7 +44,14 @@ const spotReducer = (state = initialState, action) => {
         ...state,
         spotList: action.payload,
       };
-
+    case LOAD_SPOT:
+      return {
+        ...state,
+        spotDetails: {
+          // ...state.spotDetails,
+          [action.payload.id]: action.payload,
+        },
+      };
     default:
       return state;
   }

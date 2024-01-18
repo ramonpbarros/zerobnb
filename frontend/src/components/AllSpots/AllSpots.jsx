@@ -11,14 +11,12 @@ function AllSpots() {
 
   useEffect(() => {
     dispatch(getAllSpots());
-    console.log('all spots: ', allSpots, 'spotarray: ', spotArray);
   }, [dispatch]);
 
   return (
     <>
       <div className="spot-list">
         {spotArray.map((spot) => {
-          console.log('spot: ', spot);
           return (
             <div key={spot.id} className="tooltip">
               <Link to={`/spots/${spot.id}`}>
@@ -38,14 +36,6 @@ function AllSpots() {
                     {spot.avgRating}
                   </div>
                 </div>
-                {/* <div>
-                  {spot.city}, {spot.state}
-                </div>
-                <div>
-                  <i className="fa-solid fa-star"></i>
-                  {spot.avgRating}
-                </div>
-                <div>${spot.price} night</div> */}
               </div>
             </div>
           );

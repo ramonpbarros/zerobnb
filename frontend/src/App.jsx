@@ -4,6 +4,7 @@ import { createBrowserRouter, RouterProvider, Outlet } from 'react-router-dom';
 import Navigation from './components/Navigation';
 import * as sessionActions from './store/session';
 import AllSpots from './components/AllSpots';
+import SpotDetail from './components/SpotDetail/SpotDetail';
 
 function Layout() {
   const dispatch = useDispatch();
@@ -11,7 +12,7 @@ function Layout() {
 
   useEffect(() => {
     dispatch(sessionActions.restoreUser()).then(() => {
-      setIsLoaded(true)
+      setIsLoaded(true);
     });
   }, [dispatch]);
 
@@ -29,10 +30,14 @@ const router = createBrowserRouter([
     children: [
       {
         path: '/',
-        element: <AllSpots />
-      }
-    ]
-  }
+        element: <AllSpots />,
+      },
+      {
+        path: 'spots/:spotId',
+        element: <SpotDetail />,
+      },
+    ],
+  },
 ]);
 
 function App() {
