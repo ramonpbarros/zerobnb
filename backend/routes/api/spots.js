@@ -214,7 +214,7 @@ router.get('/:spotId', async (req, res) => {
   delete formattedSpot.Images;
 
   if (formattedSpot.Users) {
-    (formattedSpot.id = formattedUser.id),
+    // (formattedSpot.id = formattedUser.id),
       (formattedSpot.Owner = formattedUser);
   }
 

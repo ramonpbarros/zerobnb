@@ -15,6 +15,32 @@ module.exports = {
           {
             ownerId: 1,
             address: '1234 Some Address 1',
+            city: 'San Diego',
+            state: 'California',
+            country: 'USA',
+            lat: 38.8951,
+            lng: -77.0364,
+            name: 'San Diego Home',
+            description:
+              'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer euismod libero sed ante scelerisque pharetra. Morbi sagittis risus id massa porttitor luctus',
+            price: 101,
+          },
+          {
+            ownerId: 1,
+            address: '1234 Some Address 1',
+            city: 'Maceio',
+            state: 'Alagoas',
+            country: 'Brazil',
+            lat: 38.8951,
+            lng: -77.0364,
+            name: 'Brazilian Home',
+            description:
+              'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer euismod libero sed ante scelerisque pharetra. Morbi sagittis risus id massa porttitor luctus',
+            price: 130.50,
+          },
+          {
+            ownerId: 1,
+            address: '1234 Some Address 1',
             city: 'City 1',
             state: 'State 1',
             country: 'USA 1',
