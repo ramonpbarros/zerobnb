@@ -1,18 +1,18 @@
-/* Adjust the spot-list container */
 .spot-list {
   display: flex;
-  flex-wrap: wrap; /* Allow items to wrap to the next row */
-  justify-content: space-between; /* Distribute items along the row */
-  position: relative;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  margin-top: 1em;
+  /* position: relative; */
 }
 
-/* Style each spot item within the spot-list */
+
 .spot-list > div {
-  width: 23%; /* Set the width to ensure a maximum of 4 items per row */
-  margin-bottom: 20px; /* Adjust spacing between items */
-  box-sizing: border-box; /* Include padding and border in the element's total width and height */
-  padding: 10px; /* Adjust padding within each item */
-  position: relative; /* Add position relative for positioning the tooltip */
+  width: 23%;
+  margin-bottom: 20px;
+  box-sizing: border-box;
+  padding: 10px;
+  position: relative;
 }
 
 .tooltip {
@@ -28,7 +28,7 @@
   border-radius: 6px;
   padding: 5px 0;
   position: absolute;
-  top: 60%; /* Position the tooltip below the arrow pointer */
+  top: 55%;
   left: 50%;
   transform: translateX(-50%);
   opacity: 0;
@@ -37,21 +37,40 @@
 
 .tooltip:hover .tooltiptext {
   visibility: visible;
-  opacity: .85;
+  opacity: 1;
   cursor: pointer;
 }
 
-/* Responsive styling for smaller screens */
+.card-container {
+  display: flex;
+  flex-direction: column;
+}
+
+.row {
+  display: flex;
+  justify-content: space-between;
+}
+
+.left {
+  flex: 1;
+}
+
+.right {
+  display: flex;
+  align-items: top;
+  margin: 8px;
+}
+
+
 @media (max-width: 768px) {
   .spot-list > div {
-    width: 48%; /* Two items per row on smaller screens */
+    width: 48%;
   }
 }
 
-/* Styling for the image within each spot item */
 .spot-list img {
-  width: 100%; /* Make the image fill the container */
-  height: auto; /* Maintain aspect ratio */
-  border-radius: 8px; /* Add border-radius for rounded corners */
-  cursor: pointer; /* Set cursor to pointer on image hover */
+  width: 100%;
+  height: auto;
+  border-radius: 8px;
+  cursor: pointer;
 }

@@ -24,12 +24,16 @@ a:hover {
 }
 
 .profile-dropdown {
+  margin-top: 5px;
   display: block;
   position: absolute;
   transform: translateX(-50%);
   background-color: white;
-  box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 5px 5px rgba(0, 0, 0, 0.1);
   padding: 10px;
+  z-index: 1;
+  border-radius: 8px;
+  border: 1px solid #ebebeb;
 }
 
 .profile-dropdown.hidden {
