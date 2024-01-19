@@ -27,13 +27,14 @@ a:hover {
   margin-top: 5px;
   display: block;
   position: absolute;
-  transform: translateX(-50%);
+  transform: translateX(-65%);
   background-color: white;
   box-shadow: 0 5px 5px rgba(0, 0, 0, 0.1);
   padding: 10px;
   z-index: 1;
   border-radius: 8px;
   border: 1px solid #ebebeb;
+  width: 13%;
 }
 
 .profile-dropdown.hidden {
@@ -68,14 +69,14 @@ a:hover {
 }
 
 .nav-btn {
-  border: none; /* Remove button border */
-  background-color: transparent; /* Set your desired button background color */
-  color: inherit; /* Inherit text color from parent */
+  border: none;
+  background-color: transparent;
+  color: inherit;
   cursor: pointer;
-  transition: background-color 0.3s ease; /* Add transition for a smoother effect */
+  transition: background-color 0.3s ease;
   width: 100%;
-  /* padding: 1px 50px; */
   white-space: nowrap;
+  width: 100%;
 }
 
 .nav-btn:hover {
@@ -85,4 +86,17 @@ a:hover {
 
 .logo{
   width: 40%;
+}
+
+.nav-btns-container {
+  display: flex;
+  flex-wrap: wrap;
+  flex-direction: row;
+  align-items: center;
+}
+
+.create-spot-link {
+  display: flex;
+  align-items: center;
+  margin-right: 15px;
 }

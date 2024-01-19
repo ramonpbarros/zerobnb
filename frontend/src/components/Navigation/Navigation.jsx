@@ -1,6 +1,7 @@
 import { NavLink } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import ProfileButton from './ProfileButton';
+import { Link } from 'react-router-dom';
 import './Navigation.css';
 
 function Navigation({ isLoaded }) {
@@ -11,18 +12,21 @@ function Navigation({ isLoaded }) {
       <ul>
         <li>
           <NavLink to="/">
-            <img
-              src="/assets/imgs/zero.png"
-              className={'logo'}
-              alt="logo"
-            />
+            <img src="/assets/imgs/zero.png" className={'logo'} alt="logo" />
           </NavLink>
         </li>
-        {isLoaded && (
-          <li>
-            <ProfileButton user={sessionUser} />
-          </li>
-        )}
+        <div className='nav-btns-container'>
+          {sessionUser && (
+            <div className="create-spot-link">
+              <Link href="/">Create a New Spot</Link>
+            </div>
+          )}
+          {isLoaded && (
+            <li>
+              <ProfileButton user={sessionUser} />
+            </li>
+          )}
+        </div>
       </ul>
     </>
   );
