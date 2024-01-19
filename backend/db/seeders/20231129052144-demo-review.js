@@ -14,7 +14,19 @@ module.exports = {
         {
           userId: 1,
           spotId: 1,
-          review: 'Some review',
+          review: 'Some review from user 1 to spot 1',
+          stars: 5,
+        },
+        {
+          userId: 1,
+          spotId: 1,
+          review: 'Some review again from user 1 to spot 1',
+          stars: 5,
+        },
+        {
+          userId: 2,
+          spotId: 1,
+          review: 'Some review from user 2 to spot 1',
           stars: 5,
         },
         {

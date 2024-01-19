@@ -12,7 +12,7 @@ function Navigation({ isLoaded }) {
         <li>
           <NavLink to="/">
             <img
-              src="../../../public/assets/imgs/zero.png"
+              src="/assets/imgs/zero.png"
               className={'logo'}
               alt="logo"
             />
