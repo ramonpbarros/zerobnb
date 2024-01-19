@@ -26,7 +26,8 @@ function LoginFormModal() {
 
   return (
     <>
-      <h1>Log In</h1>
+      <h1 style={{ textAlign: 'center' }}>Log In</h1>
+      {errors.message && <p className="error">{errors.message}</p>}
       <form onSubmit={handleSubmit}>
         <label>
           Username or Email
@@ -46,8 +47,30 @@ function LoginFormModal() {
             required
           />
         </label>
-        {errors.message && <p>{errors.message}</p>}
-        <button type="submit">Log In</button>
+        <button
+          className="login-btn"
+          type="submit"
+          disabled={credential.length < 4 || password.length < 6}
+        >
+          Log In
+        </button>
+        <div className="demo-user">
+          <button
+            className="demo-user-btn"
+            type="button"
+            onClick={(e) => {
+              e.preventDefault();
+              return dispatch(
+                sessionActions.login({
+                  credential: 'Demo-lition',
+                  password: 'password',
+                })
+              ).then(closeModal);
+            }}
+          >
+            Demo User
+          </button>
+        </div>
       </form>
     </>
   );
