@@ -4,19 +4,27 @@ import ProfileButton from './ProfileButton';
 import './Navigation.css';
 
 function Navigation({ isLoaded }) {
-  const sessionUser = useSelector(state => state.session.user);
+  const sessionUser = useSelector((state) => state.session.user);
 
   return (
-    <ul>
-      <li>
-        <NavLink to="/">Home</NavLink>
-      </li>
-      {isLoaded && (
+    <>
+      <ul>
         <li>
-          <ProfileButton user={sessionUser} />
+          <NavLink to="/">
+            <img
+              src="/assets/imgs/zero.png"
+              className={'logo'}
+              alt="logo"
+            />
+          </NavLink>
         </li>
-      )}
-    </ul>
+        {isLoaded && (
+          <li>
+            <ProfileButton user={sessionUser} />
+          </li>
+        )}
+      </ul>
+    </>
   );
 }
 
