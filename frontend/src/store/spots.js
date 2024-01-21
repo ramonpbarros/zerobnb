@@ -2,6 +2,8 @@ import { csrfFetch } from './csrf';
 
 const LOAD_SPOTS = 'spots/LOAD_SPOTS';
 const LOAD_SPOT = 'spots/LOAD_SPOT';
+const CREATE_SPOT = 'spots/CREATE_SPOT';
+const ADD_SPOT_IMAGE = 'spots/ADD_SPOT_IMAGE';
 
 const loadSpots = (spotList) => ({
   type: LOAD_SPOTS,
@@ -11,6 +13,16 @@ const loadSpots = (spotList) => ({
 const loadSpot = (spot) => ({
   type: LOAD_SPOT,
   payload: spot,
+});
+
+const createSpot = (spot) => ({
+  type: CREATE_SPOT,
+  payload: spot,
+});
+
+const addSpotImage = (image) => ({
+  type: ADD_SPOT_IMAGE,
+  payload: image,
 });
 
 export const getAllSpots = () => async (dispatch) => {
@@ -32,6 +44,63 @@ export const getSpotById = (spotId) => async (dispatch) => {
   }
 };
 
+export const createNewSpot =
+  ({
+    id,
+    ownerId,
+    address,
+    city,
+    state,
+    country,
+    lat,
+    lng,
+    name,
+    description,
+    price,
+  }) =>
+  async (dispatch) => {
+    const response = await csrfFetch('/api/spots', {
+      method: 'POST',
+      body: JSON.stringify({
+        id,
+        ownerId,
+        address,
+        city,
+        state,
+        country,
+        lat,
+        lng,
+        name,
+        description,
+        price,
+      }),
+    });
+
+    if (response.ok) {
+      const spot = await response.json();
+      dispatch(createSpot(spot));
+      return spot;
+    }
+  };
+
+export const addNewSpotImage =
+  ({ url, preview }, spotId) =>
+  async (dispatch) => {
+    const response = await csrfFetch(`/api/spots/${spotId}/images`, {
+      method: 'POST',
+      body: JSON.stringify({
+        url,
+        preview,
+      }),
+    });
+
+    if (response.ok) {
+      const image = await response.json();
+      dispatch(addSpotImage(image));
+      return image;
+    }
+  };
+
 const initialState = {
   spotList: [],
   spotDetails: {},
@@ -48,7 +117,21 @@ const spotReducer = (state = initialState, action) => {
       return {
         ...state,
         spotDetails: {
-          // ...state.spotDetails,
+          [action.payload.id]: action.payload,
+        },
+      };
+    case CREATE_SPOT:
+      return {
+        ...state,
+        newSpot: {
+          [action.payload.id]: action.payload,
+        },
+      };
+    case ADD_SPOT_IMAGE:
+      return {
+        ...state,
+        newImage: {
+          ...state.newImage,
           [action.payload.id]: action.payload,
         },
       };
