@@ -15,10 +15,10 @@ function Navigation({ isLoaded }) {
             <img src="/assets/imgs/zero.png" className={'logo'} alt="logo" />
           </NavLink>
         </li>
-        <div className='nav-btns-container'>
+        <div className="nav-btns-container">
           {sessionUser && (
             <div className="create-spot-link">
-              <Link href="/">Create a New Spot</Link>
+              <Link to="spots/new">Create a New Spot</Link>
             </div>
           )}
           {isLoaded && (
