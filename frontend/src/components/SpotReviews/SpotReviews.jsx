@@ -44,7 +44,7 @@ function SpotReviews({ id }) {
           modalComponent={<PostReviewModal spotId={spot.id}/>}
         />
       )}
-      {reviewArray.map((review) => (
+      {reviewArray.slice().reverse().map((review) => (
         <>
           <div className="reviews-list">
             <div className="first-name">

@@ -65,20 +65,34 @@ function SpotDetail() {
             </button>
           </div>
         </div>
-
-        <div className="star-rating">
-          <h2>
-            <i className="fa-solid fa-star"></i> {spot.avgStarRating}
-          </h2>
-        </div>
-        <h2>&nbsp; &#x2022; &nbsp;</h2>
-        <div className="reviews">
-          <h2>
-            {spot.numReviews} {spot.numReviews > 1 ? 'reviews' : 'review'}
-          </h2>
-        </div>
+        {spot.numReviews > 0 ? (
+          <>
+            <div className="star-rating">
+              <h2>
+                <i className="fa-solid fa-star"></i> {spot.avgStarRating}
+              </h2>
+            </div>
+            <h2>&nbsp; &#x2022; &nbsp;</h2>
+            <div className="reviews">
+              <h2>
+                {spot.numReviews} {spot.numReviews > 1 ? 'reviews' : 'review'}
+              </h2>
+            </div>
+          </>
+        ) : (
+          <>
+            <div className="star-rating">
+              <h2>
+                <i className="fa-solid fa-star"></i>
+              </h2>
+            </div>
+            <div className="reviews">
+              <h2>New</h2>
+            </div>
+          </>
+        )}
       </div>
-      <div className='container'>
+      <div className="container">
         <SpotReviews id={spot.id} />
       </div>
     </>
