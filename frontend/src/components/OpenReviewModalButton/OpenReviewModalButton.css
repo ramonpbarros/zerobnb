@@ -1,0 +1,14 @@
+.post-review-btn {
+  margin-bottom: 2em;
+  background-color: #dc0f63;
+  color: rgb(250, 246, 246);
+  padding: 15px 15px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.post-review-btn:hover {
+  background-color: #bd0e57d7;
+  color: white;
+}

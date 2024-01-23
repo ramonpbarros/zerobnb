@@ -18,8 +18,6 @@ function SpotDetail() {
     return <div>Loading...</div>;
   }
 
-  console.log('spot:', spot);
-
   return (
     <>
       <div className="container">
@@ -29,7 +27,6 @@ function SpotDetail() {
         </div>
         <div className="spot-images-container">
           <div className="large-image">
-            {console.log(spot.SpotImages)}
             {spot.SpotImages.length > 0 && (
               <img src={`${spot.SpotImages[0].url}`} alt="Large Spot" />
             )}
@@ -68,20 +65,34 @@ function SpotDetail() {
             </button>
           </div>
         </div>
-
-        <div className="star-rating">
-          <h2>
-            <i className="fa-solid fa-star"></i> {spot.avgStarRating}
-          </h2>
-        </div>
-        <h2>&nbsp; &#x2022; &nbsp;</h2>
-        <div className="reviews">
-          <h2>
-            {spot.numReviews} {spot.numReviews > 1 ? 'reviews' : 'review'}
-          </h2>
-        </div>
+        {spot.numReviews > 0 ? (
+          <>
+            <div className="star-rating">
+              <h2>
+                <i className="fa-solid fa-star"></i> {spot.avgStarRating}
+              </h2>
+            </div>
+            <h2>&nbsp; &#x2022; &nbsp;</h2>
+            <div className="reviews">
+              <h2>
+                {spot.numReviews} {spot.numReviews > 1 ? 'reviews' : 'review'}
+              </h2>
+            </div>
+          </>
+        ) : (
+          <>
+            <div className="star-rating">
+              <h2>
+                <i className="fa-solid fa-star"></i>
+              </h2>
+            </div>
+            <div className="reviews">
+              <h2>New</h2>
+            </div>
+          </>
+        )}
       </div>
-      <div className='container'>
+      <div className="container">
         <SpotReviews id={spot.id} />
       </div>
     </>

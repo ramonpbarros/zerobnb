@@ -1,24 +1,50 @@
 import { useSelector, useDispatch } from 'react-redux';
 import { useEffect } from 'react';
+import { useParams } from 'react-router-dom';
 import { getReviewsBySpotId } from '../../store/reviews';
 import './SpotReviews.css';
+import { getSpotById } from '../../store/spots';
+import OpenReviewModalButton from '../OpenReviewModalButton';
+import PostReviewModal from '../PostReviewModal';
 
 function SpotReviews({ id }) {
+  const { spotId } = useParams();
   const dispatch = useDispatch();
   const reviews = useSelector((state) => state.reviews.reviewList);
+  const sessionUser = useSelector((state) => state.session.user);
+  const spot = useSelector((state) => state.spots.spotDetails[spotId]);
   const reviewArray = reviews.Reviews || [];
 
   useEffect(() => {
     dispatch(getReviewsBySpotId(id));
-  }, [dispatch, id]);
+    dispatch(getSpotById(spotId));
+  }, [dispatch, id, spotId]);
 
   if (!reviews) {
     return <div>Loading...</div>;
   }
 
+  let userHasReview;
+
+  reviewArray.forEach((review) => {
+    if (sessionUser.id == review.userId) {
+      userHasReview = false;
+    } else {
+      userHasReview = true;
+    }
+  });
+
+  const userCreatedSpot = sessionUser.id === spot.ownerId;
+
   return (
     <>
-      {reviewArray.map((review) => (
+      {sessionUser && userHasReview && userCreatedSpot && (
+        <OpenReviewModalButton
+          buttonText="Post Your Review"
+          modalComponent={<PostReviewModal spotId={spot.id}/>}
+        />
+      )}
+      {reviewArray.slice().reverse().map((review) => (
         <>
           <div className="reviews-list">
             <div className="first-name">
