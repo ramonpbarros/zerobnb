@@ -18,8 +18,6 @@ function SpotDetail() {
     return <div>Loading...</div>;
   }
 
-  console.log('spot:', spot);
-
   return (
     <>
       <div className="container">
@@ -29,7 +27,6 @@ function SpotDetail() {
         </div>
         <div className="spot-images-container">
           <div className="large-image">
-            {console.log(spot.SpotImages)}
             {spot.SpotImages.length > 0 && (
               <img src={`${spot.SpotImages[0].url}`} alt="Large Spot" />
             )}

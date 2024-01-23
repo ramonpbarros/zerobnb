@@ -21,7 +21,7 @@ input {
   box-sizing: border-box;
 }
 
-button {
+.signup-button {
   background-color: #DC0F63;
   color: rgb(250, 246, 246);
   padding: 10px 15px;
@@ -30,7 +30,7 @@ button {
   cursor: pointer;
 }
 
-button:hover {
+.signup-button:hover {
   background-color: #bd0e57d7;
   color: white;
 }

@@ -42,8 +42,6 @@ export default function CreateSpot() {
   const handleSubmit = (e) => {
     e.preventDefault();
 
-    // setErrors({});
-
     setFormSubmitted(true);
 
     if (!url[0].length) {
@@ -85,12 +83,7 @@ export default function CreateSpot() {
               dispatch(addNewSpotImage(spotImg, spotId));
             });
 
-            // if (!url[0].length) {
-            //   setImageErrors('Preview image is required.');
-            // } else {
-            //   setFormSubmitted(false);
-            //   navigate(`/spots/${spotId}`);
-            // }
+
             setFormSubmitted(false);
             navigate(`/spots/${spotId}`);
           }
