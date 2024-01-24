@@ -5,6 +5,7 @@ const LOAD_SPOT = 'spots/LOAD_SPOT';
 const LOAD_SPOTS_CURRENT_USER = 'spots/LOAD_SPOTS_CURRENT_USER';
 const CREATE_SPOT = 'spots/CREATE_SPOT';
 const ADD_SPOT_IMAGE = 'spots/ADD_SPOT_IMAGE';
+const UPDATE_SPOT = 'spots/UPDATE_SPOT';
 
 const loadSpots = (spotList) => ({
   type: LOAD_SPOTS,
@@ -29,6 +30,11 @@ const createSpot = (spot) => ({
 const addSpotImage = (image) => ({
   type: ADD_SPOT_IMAGE,
   payload: image,
+});
+
+const updateSpot = (spot) => ({
+  type: UPDATE_SPOT,
+  payload: spot,
 });
 
 export const getAllSpots = () => async (dispatch) => {
@@ -117,6 +123,34 @@ export const addNewSpotImage =
     }
   };
 
+export const editSpot =
+  (
+    { address, city, state, country, lat, lng, name, description, price },
+    spotId
+  ) =>
+  async (dispatch) => {
+    const response = await csrfFetch(`/api/spots/${spotId}`, {
+      method: 'PUT',
+      body: JSON.stringify({
+        address,
+        city,
+        state,
+        country,
+        lat,
+        lng,
+        name,
+        description,
+        price,
+      }),
+    });
+
+    if (response.ok) {
+      const spot = await response.json();
+      dispatch(updateSpot(spot));
+      return spot;
+    }
+  };
+
 const initialState = {
   spotList: [],
   spotDetails: {},
@@ -156,6 +190,13 @@ const spotReducer = (state = initialState, action) => {
           [action.payload.id]: action.payload,
         },
       };
+      case UPDATE_SPOT:
+        return {
+          ...state,
+          updatedSpot: {
+            [action.payload.id]: action.payload,
+          },
+        };
     default:
       return state;
   }

@@ -51,7 +51,7 @@ export default function ManageSpots() {
                   </div>
                 </div>
                 <div className="btns">
-                  <button className="update-btn">Update</button>
+                  <Link className="update-btn" to={`/spots/${spot.id}/edit`}>Update</Link>
                   <button className="delete-btn">Delete</button>
                 </div>
               </div>
