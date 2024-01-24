@@ -17,6 +17,7 @@ function AllSpots() {
     <>
       <div className="spot-list">
         {spotArray.map((spot) => {
+          console.log("get all spots: ", spot)
           return (
             <div key={spot.id} className="tooltip">
               <Link to={`/spots/${spot.id}`}>

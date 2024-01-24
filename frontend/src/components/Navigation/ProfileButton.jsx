@@ -5,9 +5,11 @@ import OpenModalButton from '../OpenModalButton';
 import LoginFormModal from '../LoginFormModal';
 import SignupFormModal from '../SignupFormModal';
 import './Navigation.css';
+import { Link, useNavigate } from 'react-router-dom';
 
 function ProfileButton({ user }) {
   const dispatch = useDispatch();
+  const navigate = useNavigate();
   const [showMenu, setShowMenu] = useState(false);
   const ulRef = useRef();
 
@@ -49,14 +51,28 @@ function ProfileButton({ user }) {
       <ul className={ulClassName} ref={ulRef}>
         {user ? (
           <>
-            <li>Hello, {user.firstName}</li>
-            <li>{user.email}</li>
-            <hr />
-            <li>Manage Spots</li>
-            <hr />
-            <li>
-              <button className='nav-btn' onClick={logout}>Log Out</button>
-            </li>
+            <div className="list">
+              <div>
+                <p>Hello, {user.firstName}</p>
+                <p className="email">{user.email}</p>
+              </div>
+              <Link
+                className="nav-btn2"
+                to="spots/current"
+                onClick={(e) => {
+                  e.preventDefault();
+                  closeMenu();
+                  navigate('spots/current')
+                }}
+              >
+                Manage Spots
+              </Link>
+              <div className="custom-hr"></div>
+              <hr />
+              <button className="nav-btn" onClick={logout}>
+                Log Out
+              </button>
+            </div>
           </>
         ) : (
           <>

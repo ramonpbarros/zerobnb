@@ -97,6 +97,7 @@ router.get('/current', requireAuth, async (req, res) => {
     where: {
       ownerId: currentUser.id,
     },
+    include: [{ model: Image }, { model: Review }]
   });
 
   const formattedSpots = spots.map((spot) => {
@@ -134,6 +135,8 @@ router.get('/current', requireAuth, async (req, res) => {
 
     formattedSpot.avgRating = avgRating;
 
+
+
     if (formattedSpot.Images && formattedSpot.Images.length > 0) {
       formattedSpot.previewImage = formattedSpot.Images[0].url;
       delete formattedSpot.Images;
@@ -142,6 +145,8 @@ router.get('/current', requireAuth, async (req, res) => {
     }
 
     delete formattedSpot.Reviews;
+
+
 
     return formattedSpot;
   });
