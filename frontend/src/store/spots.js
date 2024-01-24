@@ -2,6 +2,7 @@ import { csrfFetch } from './csrf';
 
 const LOAD_SPOTS = 'spots/LOAD_SPOTS';
 const LOAD_SPOT = 'spots/LOAD_SPOT';
+const LOAD_SPOTS_CURRENT_USER = 'spots/LOAD_SPOTS_CURRENT_USER';
 const CREATE_SPOT = 'spots/CREATE_SPOT';
 const ADD_SPOT_IMAGE = 'spots/ADD_SPOT_IMAGE';
 
@@ -13,6 +14,11 @@ const loadSpots = (spotList) => ({
 const loadSpot = (spot) => ({
   type: LOAD_SPOT,
   payload: spot,
+});
+
+const loadSpotsCurrentUser = (spots) => ({
+  type: LOAD_SPOTS_CURRENT_USER,
+  payload: spots,
 });
 
 const createSpot = (spot) => ({
@@ -41,6 +47,16 @@ export const getSpotById = (spotId) => async (dispatch) => {
     const spot = await response.json();
     dispatch(loadSpot(spot));
     return spot;
+  }
+};
+
+export const getSpotsByCurrentUser = () => async (dispatch) => {
+  const response = await csrfFetch('/api/spots/current');
+
+  if (response.ok) {
+    const spots = await response.json();
+    dispatch(loadSpotsCurrentUser(spots));
+    return spots;
   }
 };
 
@@ -119,6 +135,11 @@ const spotReducer = (state = initialState, action) => {
         spotDetails: {
           [action.payload.id]: action.payload,
         },
+      };
+    case LOAD_SPOTS_CURRENT_USER:
+      return {
+        ...state,
+        spots: action.payload,
       };
     case CREATE_SPOT:
       return {

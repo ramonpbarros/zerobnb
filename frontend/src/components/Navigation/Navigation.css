@@ -8,10 +8,6 @@ ul {
   border-bottom: 1px solid #ebebeb;
 }
 
-li {
-  margin-right: 15px;
-}
-
 a {
   text-decoration: none;
   color: #ff385c;
@@ -45,11 +41,11 @@ a:hover {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  background-color: white; /* Set your desired background color */
-  color: black; /* Set your desired text color */
+  background-color: white;
+  color: black;
   border: solid #ebebeb;
   padding: 10px 15px;
-  border-radius: 25px; /* Adjust border-radius for the pill shape */
+  border-radius: 25px;
   cursor: pointer;
 }
 
@@ -57,30 +53,50 @@ a:hover {
   font-size: 18px;
 }
 
-/* Add this if you want the hamburger icon on the left */
 .custom-button i:first-child {
-  margin-right: 10px; /* Adjust the spacing between the icons */
+  margin-right: 10px;
 }
 
 .custom-button:hover {
-  box-shadow: 0 2px 2px rgba(0, 0, 0, 0.5); /* Add a box shadow on hover */
+  box-shadow: 0 2px 2px rgba(0, 0, 0, 0.5);
   color: black;
   background-color: white;
 }
 
 .nav-btn {
+  background-color: #DC0F63;
+  color: rgb(250, 246, 246);
+  padding: 10px 15px;
   border: none;
-  background-color: transparent;
-  color: inherit;
+  border-radius: 4px;
   cursor: pointer;
-  transition: background-color 0.3s ease;
   width: 100%;
-  white-space: nowrap;
-  width: 100%;
+  font-weight: 100;
+  font-size: 13px;
 }
 
 .nav-btn:hover {
-  background-color: lightgray; /* Set your desired background color on hover */
+  background-color: #bd0e57d7;
+  color: white;
+}
+
+.nav-btn2 {
+  background-color: transparent;
+  color: black;
+  padding: 10px 15px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  width: 85%;
+  font-weight: 100;
+  font-size: 13px;
+  text-align: center;
+  font-weight: bold;
+  margin-top: 0;
+}
+
+.nav-btn2:hover {
+  background-color: lightgray;
   color: black;
 }
 
@@ -99,4 +115,26 @@ a:hover {
   display: flex;
   align-items: center;
   margin-right: 15px;
+}
+
+.list{
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.list li {
+  width: 100%;
+}
+
+.email {
+  border-bottom: 1px solid black;
+  width: 100%;
+  padding-bottom: 1em;
+}
+
+.custom-hr{
+  border-bottom: 1px solid black;
+  width: 85%;
 }
