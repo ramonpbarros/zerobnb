@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { addNewSpotImage, editSpot, getSpotById } from '../../store/spots';
+import { editSpot, getSpotById } from '../../store/spots';
 import { useNavigate, useParams } from 'react-router-dom';
 
 export default function UpdateSpot() {
@@ -77,7 +77,6 @@ export default function UpdateSpot() {
   //     dispatch(addNewSpotImage(spotImg, spotId));
   //   }
   // };
-
 
   const handleSubmit = (e) => {
     e.preventDefault();
