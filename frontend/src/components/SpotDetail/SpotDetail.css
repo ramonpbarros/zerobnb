@@ -71,6 +71,11 @@
   margin-bottom: 0.8em;
 }
 
+.rating-container {
+  display: flex;
+  flex-direction: row;
+}
+
 .reviews {
   /* margin: 12px 0px; */
 }
@@ -98,7 +103,6 @@
   }
 
   .large-image,
-  /* .square-images, */
   .description-card,
   .price-card {
     flex-basis: 100%;

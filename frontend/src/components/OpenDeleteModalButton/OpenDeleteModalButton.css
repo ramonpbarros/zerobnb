@@ -1,21 +1,3 @@
-.reviews-list {
-  display: flex;
-  flex-direction: column;
-  border-bottom: 1px solid #ebebeb;
-  margin-bottom: 2em;
-  width: 100%;
-}
-
-.first-name {
-  margin: 0;
-  font-size: 1.17em;
-  font-weight: bold;
-}
-
-.date {
-  color: gray;
-}
-
 .delete-btn {
   background-color: rgb(209, 41, 41);
   color: rgb(250, 246, 246);

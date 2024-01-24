@@ -67,16 +67,18 @@ function SpotDetail() {
         </div>
         {spot.numReviews > 0 ? (
           <>
-            <div className="star-rating">
-              <h2>
-                <i className="fa-solid fa-star"></i> {spot.avgStarRating}
-              </h2>
-            </div>
-            <h2>&nbsp; &#x2022; &nbsp;</h2>
-            <div className="reviews">
-              <h2>
-                {spot.numReviews} {spot.numReviews > 1 ? 'reviews' : 'review'}
-              </h2>
+            <div className="rating-container">
+              <div className="star-rating">
+                <h2>
+                  <i className="fa-solid fa-star"></i> {spot.avgStarRating}
+                </h2>
+              </div>
+              <h2>&nbsp; &#x2022; &nbsp;</h2>
+              <div className="reviews">
+                <h2>
+                  {spot.numReviews} {spot.numReviews > 1 ? 'reviews' : 'review'}
+                </h2>
+              </div>
             </div>
           </>
         ) : (
