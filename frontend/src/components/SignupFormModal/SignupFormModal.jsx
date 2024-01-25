@@ -3,6 +3,7 @@ import { useDispatch } from 'react-redux';
 import { useModal } from '../../context/Modal';
 import * as sessionActions from '../../store/session';
 import './SignupForm.css';
+import { getAllSpots } from '../../store/spots';
 
 function SignupFormModal() {
   const dispatch = useDispatch();
@@ -28,7 +29,10 @@ function SignupFormModal() {
           password,
         })
       )
-        .then(closeModal)
+        .then(() => {
+          dispatch(getAllSpots());
+          closeModal();
+        })
         .catch(async (res) => {
           const data = await res.json();
           if (data?.errors) {
@@ -116,11 +120,11 @@ function SignupFormModal() {
           disabled={
             !email.length ||
             !username.length ||
-            !username.length < 4 ||
+            username.length < 4 ||
             !firstName.length ||
             !lastName.length ||
             !password.length ||
-            !password.length < 6 ||
+            password.length < 6 ||
             !confirmPassword.length
           }
         >

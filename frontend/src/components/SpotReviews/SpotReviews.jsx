@@ -7,7 +7,7 @@ import { getSpotById } from '../../store/spots';
 import OpenReviewModalButton from '../OpenReviewModalButton';
 import PostReviewModal from '../PostReviewModal';
 import OpenDeleteModalButton from '../OpenDeleteModalButton';
-import DeleteModal from '../DeleteModal';
+import DeleteReviewModal from '../DeleteReviewModal';
 
 function SpotReviews({ id }) {
   const { spotId } = useParams();
@@ -26,19 +26,17 @@ function SpotReviews({ id }) {
     return <div>Loading...</div>;
   }
 
-  let userHasReview;
+  let userHasReview = false;
 
   reviewArray.forEach((review) => {
-    if (sessionUser && sessionUser.id == review.userId) {
-      userHasReview = false;
-    } else {
+    console.log('sessionUser', sessionUser.id);
+    console.log('review.userId', review.userId);
+    if (sessionUser && sessionUser.id === review.userId) {
       userHasReview = true;
     }
   });
 
   const userCreatedSpot = sessionUser && sessionUser.id === spot.ownerId;
-
-  console.log('reviews: ', reviewArray)
 
   return (
     <>
@@ -48,7 +46,9 @@ function SpotReviews({ id }) {
           modalComponent={<PostReviewModal spotId={spot.id} />}
         />
       )}
-      {!reviewArray.length && sessionUser && !userCreatedSpot && (<p>Be the first to post a review!</p>)}
+      {!reviewArray.length && sessionUser && !userCreatedSpot && (
+        <p>Be the first to post a review!</p>
+      )}
       {reviewArray
         .slice()
         .reverse()
@@ -90,7 +90,7 @@ function SpotReviews({ id }) {
               <OpenDeleteModalButton
                 buttonText="Delete"
                 modalComponent={
-                  <DeleteModal reviewId={review.id} spotId={spotId} />
+                  <DeleteReviewModal reviewId={review.id} spotId={spotId} />
                 }
               />
             )}

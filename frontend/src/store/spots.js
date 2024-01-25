@@ -6,6 +6,7 @@ const LOAD_SPOTS_CURRENT_USER = 'spots/LOAD_SPOTS_CURRENT_USER';
 const CREATE_SPOT = 'spots/CREATE_SPOT';
 const ADD_SPOT_IMAGE = 'spots/ADD_SPOT_IMAGE';
 const UPDATE_SPOT = 'spots/UPDATE_SPOT';
+const DELETE_SPOT = 'spots/DELETE_SPOT';
 
 const loadSpots = (spotList) => ({
   type: LOAD_SPOTS,
@@ -35,6 +36,11 @@ const addSpotImage = (image) => ({
 const updateSpot = (spot) => ({
   type: UPDATE_SPOT,
   payload: spot,
+});
+
+const deleteSpot = (spotId) => ({
+  type: DELETE_SPOT,
+  payload: spotId,
 });
 
 export const getAllSpots = () => async (dispatch) => {
@@ -151,10 +157,31 @@ export const editSpot =
     }
   };
 
+export const removeSpot = (spotId) => async (dispatch) => {
+  const response = await csrfFetch(`/api/spots/${spotId}`, {
+    method: 'DELETE',
+  });
+
+  if (response.ok) {
+    return dispatch(deleteSpot(response));
+  }
+};
+
+// const initialState = {
+//   spotList: [],
+//   spotDetails: {},
+//   spots: []
+// };
 const initialState = {
   spotList: [],
   spotDetails: {},
+  newSpot: {},
+  newImage: {},
+  updatedSpot: {},
+  deletedSpotId: null,
 };
+
+let deletedSpotId;
 
 const spotReducer = (state = initialState, action) => {
   switch (action.type) {
@@ -190,13 +217,21 @@ const spotReducer = (state = initialState, action) => {
           [action.payload.id]: action.payload,
         },
       };
-      case UPDATE_SPOT:
-        return {
-          ...state,
-          updatedSpot: {
-            [action.payload.id]: action.payload,
-          },
-        };
+    case UPDATE_SPOT:
+      return {
+        ...state,
+        updatedSpot: {
+          [action.payload.id]: action.payload,
+        },
+      };
+    case DELETE_SPOT:
+      deletedSpotId = action.payload;
+      return {
+        ...state,
+        spots: Array.isArray(state.spots)
+          ? state.spots.filter((spot) => spot.id !== deletedSpotId)
+          : state.spots,
+      };
     default:
       return state;
   }

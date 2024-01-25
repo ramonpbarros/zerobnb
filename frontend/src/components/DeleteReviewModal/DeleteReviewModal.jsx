@@ -1,6 +1,6 @@
 import { useDispatch } from 'react-redux';
 import { useModal } from '../../context/Modal';
-import './DeleteModal.css';
+import './DeleteReviewModal.css';
 import { removeReview, getReviewsBySpotId } from '../../store/reviews';
 import { getSpotById } from '../../store/spots';
 
@@ -28,7 +28,7 @@ export default function PostReviewModal({ reviewId, spotId }) {
       <div className="modal">
         <h2>Confirm Delete</h2>
         <p>Are you sure you want to delete this review?</p>
-        <div className="btns">
+        <div className="modal-btns">
           <button className="confirm-delete-btn" onClick={handleDelete}>
             Yes (Delete Review)
           </button>

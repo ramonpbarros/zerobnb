@@ -1,0 +1,40 @@
+.modal{
+  text-align: center;
+}
+
+.btns {
+  display: flex;
+  flex-direction: row;
+}
+
+.confirm-delete-btn {
+  background-color: rgb(209, 41, 41);
+  color: rgb(250, 246, 246);
+  padding: 10px 10px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  width: 100%;
+  /* margin: 1em 0 1em 0; */
+}
+
+.confirm-delete-btn:hover {
+  background-color: rgb(172, 33, 33);
+  color: white;
+}
+
+.dont-delete-btn {
+  background-color: rgb(151, 143, 143);
+  color: rgb(250, 246, 246);
+  padding: 10px 10px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  width: 100%;
+  margin: 1em 0 1em 0;
+}
+
+.dont-delete-btn:hover {
+  background-color: rgb(126, 121, 121);
+  width: 100%;
+}
