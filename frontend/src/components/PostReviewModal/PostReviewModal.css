@@ -70,12 +70,12 @@
 
 .rating:not(:hover) label input:checked ~ .icon,
 .rating:hover label:hover input ~ .icon {
-  color: #ffd700;
+  color: #dc0f63;
 }
 
 .rating label input:focus:not(:checked) ~ .icon:last-child {
   color: #000;
-  text-shadow: 0 0 5px #ffd700;
+  text-shadow: 0 0 5px #dc0f63;
 }
 
 .btn {
@@ -109,4 +109,10 @@
   color: red;
   text-align: center;
   margin-bottom: 1em;
+}
+
+.stars-string {
+  display: flex;
+  align-items: center;
+  margin-left: 0.5em;
 }
