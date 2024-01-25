@@ -101,7 +101,7 @@
 .submit-review-btn:disabled {
   background-color: grey;
   color: white;
-  padding: 15px;
+  padding: 10px 15px;
   cursor: not-allowed;
 }
 

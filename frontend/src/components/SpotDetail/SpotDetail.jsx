@@ -83,6 +83,8 @@ function SpotDetail() {
           </>
         ) : (
           <>
+          <div className="rating-container">
+
             <div className="star-rating">
               <h2>
                 <i className="fa-solid fa-star"></i>
@@ -91,6 +93,7 @@ function SpotDetail() {
             <div className="reviews">
               <h2>New</h2>
             </div>
+          </div>
           </>
         )}
       </div>

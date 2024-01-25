@@ -2,7 +2,8 @@ import { useState } from 'react';
 import './PostReviewModal.css';
 import { useModal } from '../../context/Modal';
 import { useDispatch } from 'react-redux';
-import { createNewReview } from '../../store/reviews';
+import { createNewReview, getReviewsBySpotId } from '../../store/reviews';
+import { getSpotById } from '../../store/spots';
 
 export default function PostReviewModal({ spotId }) {
   const dispatch = useDispatch();
@@ -21,7 +22,11 @@ export default function PostReviewModal({ spotId }) {
     setErrors({});
 
     return dispatch(createNewReview({ review, stars }, spotId))
-      .then(closeModal, window.location.reload())
+      .then(() => {
+        dispatch(getSpotById(spotId));
+        dispatch(getReviewsBySpotId(spotId));
+        closeModal();
+      })
       .catch(async (res) => {
         const data = await res.json();
         if (data && data.message) {
@@ -101,7 +106,7 @@ export default function PostReviewModal({ spotId }) {
               <span className="icon">★</span>
             </label>
           </div>
-            <p className='stars-string'>Stars</p>
+          <p className="stars-string">Stars</p>
         </div>
         <div className="btn">
           <button

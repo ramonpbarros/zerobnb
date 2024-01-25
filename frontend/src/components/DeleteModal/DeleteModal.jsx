@@ -1,23 +1,26 @@
 import { useDispatch } from 'react-redux';
 import { useModal } from '../../context/Modal';
 import './DeleteModal.css';
-import { removeReview } from '../../store/reviews';
+import { removeReview, getReviewsBySpotId } from '../../store/reviews';
+import { getSpotById } from '../../store/spots';
 
-export default function PostReviewModal({ reviewId }) {
+export default function PostReviewModal({ reviewId, spotId }) {
   const dispatch = useDispatch();
   const { closeModal } = useModal();
 
-  const handleDelete = (e) => {
+  const handleDelete = async (e) => {
     e.preventDefault();
 
-    return dispatch(removeReview(reviewId))
-      .then(closeModal, window.location.reload())
-      .catch(async (res) => {
-        const data = await res.json();
-        if (data && data.message) {
-          console.log(data);
-        }
-      });
+    try {
+      await dispatch(removeReview(reviewId));
+
+      dispatch(getSpotById(spotId));
+      dispatch(getReviewsBySpotId(spotId));
+
+      closeModal();
+    } catch (error) {
+      console.error('Error deleting review:', error);
+    }
   };
 
   return (
