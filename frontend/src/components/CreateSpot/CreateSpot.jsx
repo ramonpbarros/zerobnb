@@ -180,7 +180,7 @@ export default function CreateSpot() {
               />
             </label>
           </div>
-          <hr />
+
           <h2>Describe your place to guests</h2>
           <p>
             Mention the best features of your space, any special amentities like
@@ -200,7 +200,7 @@ export default function CreateSpot() {
               Description needs a minimum of 30 characters
             </p>
           )}
-          <hr />
+
           <h2>Create a title for your spot</h2>
           <p>
             Catch guest&#39;s attention with a spot title that highlights what
@@ -215,7 +215,7 @@ export default function CreateSpot() {
           {formSubmitted && errors.name && (
             <p className="error">Name is required</p>
           )}
-          <hr />
+
           <h2>Set a base price for your spot</h2>
           <p>
             Competitive pricing can help your listing stand out and rank higher
@@ -234,7 +234,7 @@ export default function CreateSpot() {
           {formSubmitted && errors.price && (
             <p className="error">Price is required</p>
           )}
-          <hr />
+
           <h2>Liven up your spot with photos</h2>
           <p>Submit links to at least one photo to publish your spot.</p>
           {url.map((imageUrl, index) => (
@@ -253,7 +253,7 @@ export default function CreateSpot() {
           {formSubmitted && imageErrors && (
             <p className="error">Preview image is required.</p>
           )}
-          <hr />
+
           <button type="submit">Create Spot</button>
         </form>
       </div>

@@ -138,3 +138,15 @@ a:hover {
   border-bottom: 1px solid black;
   width: 85%;
 }
+
+
+@media screen and (max-width: 768px) {
+  .nav-btns-container {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .create-spot-link {
+    margin-right: 0; /* Adjust margin for smaller screens */
+  }
+}

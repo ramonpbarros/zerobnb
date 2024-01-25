@@ -14,9 +14,9 @@ const createReview = (review) => ({
   payload: review,
 });
 
-const deleteReview = (review) => ({
+const deleteReview = (reviewId) => ({
   type: DELETE_REVIEW,
-  payload: review,
+  payload: reviewId,
 });
 
 export const getReviewsBySpotId = (spotId) => async (dispatch) => {
@@ -47,21 +47,23 @@ export const createNewReview =
     }
   };
 
-  export const removeReview = (reviewId) => async (dispatch) => {
-    const response = await csrfFetch(`/api/reviews/${reviewId}`, {
-      method: 'DELETE',
-    });
+export const removeReview = (reviewId) => async (dispatch) => {
+  const response = await csrfFetch(`/api/reviews/${reviewId}`, {
+    method: 'DELETE',
+  });
 
-    if (response.ok) {
-      const reviews = await response.json();
-      dispatch(deleteReview(reviews));
-      return reviews;
-    }
-  };
+  if (response.ok) {
+    return dispatch(deleteReview(response));
+  }
+};
 
 const initialState = {
   reviewList: [],
+  reviews: []
 };
+
+let deletedReviewId;
+// let updatedReviewList;
 
 const reviewReducer = (state = initialState, action) => {
   switch (action.type) {
@@ -78,10 +80,16 @@ const reviewReducer = (state = initialState, action) => {
         },
       };
       case DELETE_REVIEW:
-      return {
-        ...state,
-        reviewList: action.payload,
-      };
+        deletedReviewId = action.payload;
+        return {
+          ...state,
+          reviews: state.reviews.filter((review) => review.id !== deletedReviewId),
+        };
+    // case DELETE_REVIEW:
+    //   return {
+    //     ...state,
+    //     reviewList: action.payload,
+    //   };
     default:
       return state;
   }

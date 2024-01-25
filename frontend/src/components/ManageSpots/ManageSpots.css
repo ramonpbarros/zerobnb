@@ -14,8 +14,7 @@
 }
 
 .spot-list > div {
-  width: 23%;
-  margin-bottom: 20px;
+  width: 100%;
   box-sizing: border-box;
   padding: 10px;
   position: relative;
@@ -44,11 +43,16 @@
 .update-btn {
   background-color: rgb(72, 157, 72);
   color: rgb(250, 246, 246);
-  padding: 5px 5px;
+  padding: 5px 10px;
   border: none;
   border-radius: 4px;
   cursor: pointer;
   margin-right: 0.5em;
+  font-weight: 100;
+  width: 100%;
+  text-align: center;
+  height: fit-content;
+  font-size: 13px;
 }
 
 .update-btn:hover {
@@ -63,6 +67,7 @@
   border: none;
   border-radius: 4px;
   cursor: pointer;
+  width: 100%;
 }
 
 .delete-btn:hover {
@@ -72,6 +77,10 @@
 
 .btns {
   margin-top: 1em;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
 }
 
 .create-spot-btn {
@@ -98,4 +107,23 @@
 
 .img-zoom:hover {
   transform: scale(1.04);
+}
+
+@media (min-width: 768px) {
+  .spot-list > div {
+    width: 48%;
+  }
+  .create-spot-btn {
+    width: fit-content;
+  }
+}
+
+@media (min-width: 1024px) {
+  .spot-list {
+    flex-direction: row;
+  }
+
+  .spot-list > div {
+    width: 23%;
+  }
 }
