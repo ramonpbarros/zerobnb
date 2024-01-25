@@ -29,14 +29,14 @@ function SpotReviews({ id }) {
   let userHasReview;
 
   reviewArray.forEach((review) => {
-    if (sessionUser.id == review.userId) {
+    if (sessionUser && sessionUser.id == review.userId) {
       userHasReview = false;
     } else {
       userHasReview = true;
     }
   });
 
-  const userCreatedSpot = sessionUser.id === spot.ownerId;
+  const userCreatedSpot = sessionUser && sessionUser.id === spot.ownerId;
 
   return (
     <>
@@ -84,7 +84,7 @@ function SpotReviews({ id }) {
                 </p>
               </div>
               <p>{review.review}</p>
-              {review.userId === sessionUser.id && (
+              {sessionUser && review.userId === sessionUser.id && (
                 <OpenDeleteModalButton
                   buttonText="Delete"
                   modalComponent={<DeleteModal reviewId={review.id} />}

@@ -11,7 +11,7 @@ export default function PostReviewModal({ reviewId }) {
     e.preventDefault();
 
     return dispatch(removeReview(reviewId))
-      .then(closeModal)
+      .then(closeModal, window.location.reload())
       .catch(async (res) => {
         const data = await res.json();
         if (data && data.message) {

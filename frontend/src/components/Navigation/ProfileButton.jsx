@@ -38,6 +38,8 @@ function ProfileButton({ user }) {
     e.preventDefault();
     dispatch(sessionActions.logout());
     closeMenu();
+
+    navigate('/');
   };
 
   const ulClassName = 'profile-dropdown' + (showMenu ? '' : ' hidden');
@@ -62,7 +64,7 @@ function ProfileButton({ user }) {
                 onClick={(e) => {
                   e.preventDefault();
                   closeMenu();
-                  navigate('spots/current')
+                  navigate('spots/current');
                 }}
               >
                 Manage Spots

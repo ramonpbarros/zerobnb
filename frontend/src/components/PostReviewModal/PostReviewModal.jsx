@@ -21,7 +21,7 @@ export default function PostReviewModal({ spotId }) {
     setErrors({});
 
     return dispatch(createNewReview({ review, stars }, spotId))
-      .then(closeModal)
+      .then(closeModal, window.location.reload())
       .catch(async (res) => {
         const data = await res.json();
         if (data && data.message) {
@@ -101,6 +101,7 @@ export default function PostReviewModal({ spotId }) {
               <span className="icon">★</span>
             </label>
           </div>
+            <p className='stars-string'>Stars</p>
         </div>
         <div className="btn">
           <button

@@ -21,6 +21,10 @@ input {
   box-sizing: border-box;
 }
 
+.title {
+  text-align: center;
+}
+
 .signup-button {
   background-color: #DC0F63;
   color: rgb(250, 246, 246);
@@ -28,6 +32,7 @@ input {
   border: none;
   border-radius: 4px;
   cursor: pointer;
+  width: 100%;
 }
 
 .signup-button:hover {
@@ -35,7 +40,20 @@ input {
   color: white;
 }
 
+.signup-button:disabled {
+  background-color: grey;
+  color: white;
+  padding: 10px 15px;
+  cursor: not-allowed;
+}
+
 p {
   color: red;
   margin-top: 8px;
+}
+
+.error {
+  color: red;
+  text-align: center;
+  margin-bottom: 1em;
 }

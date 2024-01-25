@@ -2,7 +2,7 @@ import { csrfFetch } from './csrf';
 
 const LOAD_SPOT_REVIEWS = 'reviews/LOAD_SPOT_REVIEWS';
 const CREATE_REVIEW = 'reviews/CREATE_REVIEW';
-const DELETE_REVIEW = 'reviews/CREATE_REVIEW';
+const DELETE_REVIEW = 'reviews/DELETE_REVIEW';
 
 const loadSpotReviews = (reviewList) => ({
   type: LOAD_SPOT_REVIEWS,
@@ -46,7 +46,6 @@ export const createNewReview =
       return review;
     }
   };
-
 
   export const removeReview = (reviewId) => async (dispatch) => {
     const response = await csrfFetch(`/api/reviews/${reviewId}`, {
