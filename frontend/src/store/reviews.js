@@ -63,7 +63,6 @@ const initialState = {
 };
 
 let deletedReviewId;
-// let updatedReviewList;
 
 const reviewReducer = (state = initialState, action) => {
   switch (action.type) {
@@ -85,11 +84,6 @@ const reviewReducer = (state = initialState, action) => {
           ...state,
           reviews: state.reviews.filter((review) => review.id !== deletedReviewId),
         };
-    // case DELETE_REVIEW:
-    //   return {
-    //     ...state,
-    //     reviewList: action.payload,
-    //   };
     default:
       return state;
   }

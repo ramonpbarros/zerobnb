@@ -1,4 +1,4 @@
-.delete-btn {
+.delete-review-btn {
   background-color: rgb(209, 41, 41);
   color: rgb(250, 246, 246);
   padding: 5px 10px;
@@ -9,7 +9,7 @@
   margin: 1em 0 1em 0;
 }
 
-.delete-btn:hover {
+.delete-review-btn:hover {
   background-color: rgb(172, 33, 33);
   color: white;
 }

@@ -28,11 +28,11 @@ function SpotDetail() {
         <div className="spot-images-container">
           <div className="large-image">
             {spot.SpotImages.length > 0 && (
-              <img src={`${spot.SpotImages[0].url}`} alt="Large Spot" />
+              <img src={`${spot.SpotImages[spot.SpotImages.length - 1].url}`} alt="Large Spot" />
             )}
           </div>
           <div className="square-images">
-            {spot.SpotImages.slice(1).map((image) => (
+            {spot.SpotImages.slice(0, -1).map((image) => (
               <img key={image.id} src={`${image.url}`} alt="Square Spot" />
             ))}
           </div>

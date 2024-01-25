@@ -3,6 +3,8 @@ import { useSelector, useDispatch } from 'react-redux';
 import { getSpotsByCurrentUser } from '../../store/spots';
 import { Link } from 'react-router-dom';
 import './ManageSpots.css';
+import OpenDeleteModalButton from '../OpenDeleteModalButton';
+import DeleteSpotModal from '../DeleteSpotModal/DeleteSpotModal';
 
 export default function ManageSpots() {
   const allSpots = useSelector((state) => state.spots);
@@ -29,6 +31,7 @@ export default function ManageSpots() {
         ) : (
           <div className="spot-list">
             {spotArray.map((spot) => {
+              console.log('spotpreviewImage: ', spot.previewImage)
               return (
                 <div key={spot.id}>
                   <Link to={`/spots/${spot.id}`}>
@@ -58,7 +61,11 @@ export default function ManageSpots() {
                     <Link className="update-btn" to={`/spots/${spot.id}/edit`}>
                       Update
                     </Link>
-                    <button className="delete-btn">Delete</button>
+                    {/* <button className="delete-btn">Delete</button> */}
+                    <OpenDeleteModalButton
+                      buttonText="Delete"
+                      modalComponent={<DeleteSpotModal spotId={spot.id} />}
+                    />
                   </div>
                 </div>
               );
