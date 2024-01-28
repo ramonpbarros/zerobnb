@@ -28,7 +28,10 @@ function SpotDetail() {
         <div className="spot-images-container">
           <div className="large-image">
             {spot.SpotImages.length > 0 && (
-              <img src={`${spot.SpotImages[spot.SpotImages.length - 1].url}`} alt="Large Spot" />
+              <img
+                src={`${spot.SpotImages[spot.SpotImages.length - 1].url}`}
+                alt="Large Spot"
+              />
             )}
           </div>
           <div className="square-images">
@@ -49,7 +52,12 @@ function SpotDetail() {
               <span className="price-text">${spot.price}</span> night
             </p>
             <div className="star-rating">
-              <i className="fa-solid fa-star"></i> {spot.avgStarRating}
+              <i className="fa-solid fa-star"></i>{' '}
+              {spot.avgStarRating == 0 ? (
+                <p>new</p>
+              ) : (
+                <>{spot.avgStarRating.toFixed(1)}</>
+              )}
             </div>
 
             <div className="reviews">
@@ -70,7 +78,12 @@ function SpotDetail() {
             <div className="rating-container">
               <div className="star-rating">
                 <h2>
-                  <i className="fa-solid fa-star"></i> {spot.avgStarRating}
+                  <i className="fa-solid fa-star"></i>
+                  {spot.avgStarRating == 0 ? (
+                    <p>new</p>
+                  ) : (
+                    <>{spot.avgStarRating.toFixed(1)}</>
+                  )}
                 </h2>
               </div>
               <h2>&nbsp; &#x2022; &nbsp;</h2>
@@ -83,17 +96,16 @@ function SpotDetail() {
           </>
         ) : (
           <>
-          <div className="rating-container">
-
-            <div className="star-rating">
-              <h2>
-                <i className="fa-solid fa-star"></i>
-              </h2>
+            <div className="rating-container">
+              <div className="star-rating">
+                <h2>
+                  <i className="fa-solid fa-star"></i>
+                </h2>
+              </div>
+              <div className="reviews">
+                <h2>New</h2>
+              </div>
             </div>
-            <div className="reviews">
-              <h2>New</h2>
-            </div>
-          </div>
           </>
         )}
       </div>

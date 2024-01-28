@@ -6,7 +6,6 @@
   /* position: relative; */
 }
 
-
 .spot-list > div {
   width: 23%;
   margin-bottom: 20px;
@@ -61,6 +60,10 @@
   margin: 8px;
 }
 
+.star-rating {
+  display: flex;
+  align-items: center;
+}
 
 @media (max-width: 768px) {
   .spot-list > div {

@@ -28,13 +28,13 @@ function SpotReviews({ id }) {
 
   let userHasReview = false;
 
-  reviewArray.forEach((review) => {
-    console.log('sessionUser', sessionUser.id);
-    console.log('review.userId', review.userId);
-    if (sessionUser && sessionUser.id === review.userId) {
-      userHasReview = true;
-    }
-  });
+  if (sessionUser && sessionUser.id) {
+    reviewArray.forEach((review) => {
+      if (sessionUser.id === review.userId) {
+        userHasReview = true;
+      }
+    });
+  }
 
   const userCreatedSpot = sessionUser && sessionUser.id === spot.ownerId;
 
