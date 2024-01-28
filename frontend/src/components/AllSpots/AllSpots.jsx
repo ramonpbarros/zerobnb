@@ -29,11 +29,19 @@ function AllSpots() {
                     <p>
                       {spot.city}, {spot.state}
                     </p>{' '}
-                    <p><strong>${spot.price}</strong> night</p>
+                    <p>
+                      <strong>${spot.price}</strong> night
+                    </p>
                   </div>
                   <div className="right">
-                    <i className="fa-solid fa-star"></i>
-                    {spot.avgRating}
+                    <div className="star-rating">
+                      <i className="fa-solid fa-star"></i>
+                      {spot.avgRating == 0 ? (
+                        <p>new</p>
+                      ) : (
+                        <>{spot.avgRating.toFixed(1)}</>
+                      )}
+                    </div>
                   </div>
                 </div>
               </div>
