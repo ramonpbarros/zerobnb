@@ -44,6 +44,10 @@ function ProfileButton({ user }) {
 
   const ulClassName = 'profile-dropdown' + (showMenu ? '' : ' hidden');
 
+  const userName = user?.user?.firstName || user?.firstName;
+
+  let userEmail = user?.user?.email || user?.email;
+
   return (
     <>
       <button className="custom-button" onClick={toggleMenu}>
@@ -55,8 +59,8 @@ function ProfileButton({ user }) {
           <>
             <div className="list">
               <div>
-                <p>Hello, {user.firstName || user.user.firstName}</p>
-                <p className="email">{user.email|| user.user.email}</p>
+                <p>Hello, {userName}</p>
+                <p className="email">{userEmail}</p>
               </div>
               <Link
                 className="nav-btn2"
