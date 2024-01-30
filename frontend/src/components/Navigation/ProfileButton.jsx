@@ -55,8 +55,8 @@ function ProfileButton({ user }) {
           <>
             <div className="list">
               <div>
-                <p>Hello, {user.user.firstName}</p>
-                <p className="email">{user.user.email}</p>
+                <p>Hello, {user.firstName || user.user.firstName}</p>
+                <p className="email">{user.email|| user.user.email}</p>
               </div>
               <Link
                 className="nav-btn2"
